@@ -15,6 +15,12 @@ The **Conformalized Brain Tumor Diagnostic Agent** replaces point predictions wi
 
 ---
 
+## 🖥️ PACS Workstation Interface Preview
+
+![PACS Medical Workstation Console](docs/pacs_workstation_demo.png)
+
+*Figure 1: OLED PACS Medical Workstation showing real-time split-conformal prediction set calibration ($\alpha=0.05$), non-conformity score quantile thresholding ($q_{\hat{\alpha}} = 0.9901$), score deltas ($\Delta S_i$), acute abstention triage banner, and RIS audit history.*
+
 ## 🔬 How Conformal Prediction Works
 
 $$\mathbb{P}\left( Y_{\text{true}} \in C_{\alpha}(X_{\text{test}}) \right) \ge 1 - \alpha$$
@@ -66,8 +72,8 @@ $$\mathbb{P}\left( Y_{\text{true}} \in C_{\alpha}(X_{\text{test}}) \right) \ge 1
 ### 1. Environment Setup & Model Calibration
 ```bash
 # Clone repository
-git clone https://github.com/Sonali-Priyadarshini/conformal-brain-tumor-agent.git
-cd conformal-brain-tumor-agent
+git clone https://github.com/Aman-Amarjit/conformalized-brain-tumor-agent.git
+cd conformalized-brain-tumor-agent
 
 # Create & activate Python virtual environment
 python3 -m venv venv
@@ -110,6 +116,8 @@ npm run dev
 │   └── data/
 │       ├── brain_tumor_model.pth # Trained PyTorch CNN model weights
 │       └── calibration_metadata.json # Precomputed conformal quantiles
+├── docs/
+│   └── pacs_workstation_demo.png # Cropped PACS Workstation Interface preview
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
@@ -128,6 +136,6 @@ npm run dev
 
 ## 👤 Author & Acknowledgments
 
-- **Author**: **Sonali Priyadarshini**
+- **Author**: **Aman Amarjit**
 - **Dataset**: Brain Tumor MRI Dataset (Axial T2, FLAIR, Coronal T1CE)
 - **Frameworks**: PyTorch, MAPIE, FastAPI, React, TypeScript, Vite
