@@ -170,7 +170,7 @@ export const App: React.FC = () => {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.7rem', color: '#8493a8', background: '#000000', padding: '3px 8px', borderRadius: '3px', border: '1px solid #172233' }}>
             <Database size={12} color="#10b981" />
-            <span>KAGGLE / SONALI PRIYADARSHINI</span>
+            <span>KAGGLE / AMAN AMARJIT</span>
           </div>
 
           <div className="pacs-badge pacs-badge-info">

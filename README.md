@@ -1,7 +1,7 @@
 # Conformalized Brain Tumor Diagnostic Agent
 
 > **Statistically Guaranteed MRI Prediction Sets & Radiologist Abstention Triage**  
-> *Author:* **Sonali Priyadarshini**
+> *Author:* **Aman Amarjit**
 
 ---
 
