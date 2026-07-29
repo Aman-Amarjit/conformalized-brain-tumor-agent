@@ -1,5 +1,5 @@
-import React from 'react';
-import { Activity, ShieldCheck, Check, AlertTriangle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Activity, ShieldCheck, Check, AlertTriangle, Info, Stethoscope, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface PredictResponse {
   prediction_set: string[];
@@ -19,6 +19,8 @@ interface Props {
 }
 
 export const ConformalSetBreakdown: React.FC<Props> = ({ result }) => {
+  const [showDoctorHelp, setShowDoctorHelp] = useState(false);
+
   if (!result) {
     return (
       <div className="pacs-panel" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '280px', color: '#52525b', textAlign: 'center', background: '#000000' }}>
@@ -38,7 +40,7 @@ export const ConformalSetBreakdown: React.FC<Props> = ({ result }) => {
 
   return (
     <div className="pacs-panel" style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', background: '#000000' }}>
-      <div className="pacs-header">
+      <div className="pacs-header" style={{ display: 'flex', alignItems: 'center' }}>
         <ShieldCheck size={14} color="#10b981" />
         <span>STATISTICALLY GUARANTEED PREDICTION SET // C_α(X)</span>
         <span className={`pacs-badge ${is_confident ? 'pacs-badge-confident' : 'pacs-badge-triage'}`} style={{ marginLeft: 'auto' }}>
@@ -46,7 +48,7 @@ export const ConformalSetBreakdown: React.FC<Props> = ({ result }) => {
         </span>
       </div>
 
-      {/* Main Set Output Display - Pure Black */}
+      {/* Main Set Output Display */}
       <div
         style={{
           background: '#000000',
@@ -61,12 +63,89 @@ export const ConformalSetBreakdown: React.FC<Props> = ({ result }) => {
 
         <div style={{ fontSize: '1.1rem', fontWeight: 700, color: is_confident ? '#10b981' : '#f59e0b', marginBottom: '0.375rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }} className="mono">
           {is_confident ? <Check size={18} /> : <AlertTriangle size={18} />}
-          {prediction_set.join('  //  ')}
+          {prediction_set.length > 0 ? prediction_set.join('  //  ') : 'Out of Distribution / Uncertain'}
         </div>
 
         <div style={{ fontSize: '0.725rem', color: '#a1a1aa', lineHeight: '1.4' }}>
           Coverage Guarantee: <code className="mono" style={{ color: '#06b6d4' }}>P(Y_true ∈ C_α(X)) ≥ {(target_coverage * 100).toFixed(1)}%</code> over calibrated population.
         </div>
+      </div>
+
+      {/* Physician Clinical Guidance Callout Box */}
+      <div
+        style={{
+          background: '#000000',
+          border: '1px solid #1e293b',
+          borderRadius: '2px',
+          padding: '0.75rem 0.875rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.5rem',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', fontWeight: 700, color: '#06b6d4' }}>
+            <Stethoscope size={14} />
+            <span>CLINICIAN RECOMMENDATION & INTERPRETATION</span>
+          </div>
+
+          <button
+            type="button"
+            className="pacs-btn"
+            style={{ padding: '2px 6px', fontSize: '0.65rem' }}
+            onClick={() => setShowDoctorHelp(!showDoctorHelp)}
+          >
+            <Info size={11} /> {showDoctorHelp ? 'HIDE EXPLAINER' : 'PHYSICIAN GUIDE'}
+            {showDoctorHelp ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+          </button>
+        </div>
+
+        <div style={{ fontSize: '0.725rem', color: '#d4d4d8', lineHeight: '1.5' }}>
+          {is_confident ? (
+            <span>
+              <strong style={{ color: '#10b981' }}>✓ Clear Scan:</strong> The model identified a single diagnosis (<span className="mono" style={{ color: '#10b981' }}>{prediction_set[0]}</span>) with a 95.0% statistical coverage guarantee. Standard diagnostic reading workflow applies.
+            </span>
+          ) : (
+            <span>
+              <strong style={{ color: '#f59e0b' }}>⚠️ Borderline Differential:</strong> The scan presents overlapping anatomical features across candidate diagnoses (<span className="mono" style={{ color: '#f59e0b' }}>{prediction_set.join(', ')}</span>). The model abstained from a single guess to prevent misclassification risk. <strong>Secondary expert reading by a radiologist is strongly recommended.</strong>
+            </span>
+          )}
+        </div>
+
+        {/* Expandable Plain-English Medical Glossary */}
+        {showDoctorHelp && (
+          <div
+            style={{
+              marginTop: '0.25rem',
+              paddingTop: '0.5rem',
+              borderTop: '1px solid #18181b',
+              fontSize: '0.675rem',
+              color: '#a1a1aa',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.375rem',
+            }}
+          >
+            <div>
+              <strong style={{ color: '#f4f4f5' }}>1. What is a Conformal Prediction Set?</strong>
+              <p style={{ margin: '2px 0 0 0', color: '#71717a' }}>
+                Instead of forcing an overconfident single guess when uncertain, the AI outputs a differential list guaranteed to contain the true pathology 95% of the time.
+              </p>
+            </div>
+            <div>
+              <strong style={{ color: '#f4f4f5' }}>2. What is Non-Conformity Score ($S_i$)?</strong>
+              <p style={{ margin: '2px 0 0 0', color: '#71717a' }}>
+                Measures how unusual a diagnosis appears to the model ($1 - P_i$). Lower scores indicate higher probability.
+              </p>
+            </div>
+            <div>
+              <strong style={{ color: '#f4f4f5' }}>3. What is Margin ($\Delta S$)?</strong>
+              <p style={{ margin: '2px 0 0 0', color: '#71717a' }}>
+                Green negative values mean the disease comfortably falls within the 95% safety threshold.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Non-Conformity Threshold Line & Class Metrics Grid */}
