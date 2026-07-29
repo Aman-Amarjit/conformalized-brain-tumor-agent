@@ -56,14 +56,16 @@ $$\mathbb{P}\left( Y_{\text{true}} \in C_{\alpha}(X_{\text{test}}) \right) \ge 1
 
 ---
 
-## 📊 Empirical Coverage Verification
+## 📊 Empirical Coverage Verification (7,023 Real MRI Scans Dataset)
 
-| Coverage Target ($1-\alpha$) | Quantile Cutoff ($q_{\hat{\alpha}}$) | Empirical Test Coverage | Avg Prediction Set Size | Status |
+| Coverage Target ($1-\alpha$) | Quantile Cutoff ($q_{\hat{\alpha}}$) | Empirical Test Coverage ($n_{\text{test}}=1080$) | Avg Prediction Set Size | Status |
 |---|---|---|---|---|
-| **95.0% (Clinical Std)** | `0.9901` | **100.0%** | `3.49` | **Guaranteed** |
-| **90.0% (High Precision)** | `0.9386` | **92.3%** | `2.85` | **Guaranteed** |
-| **85.0%** | `0.9136` | **92.3%** | `2.72` | **Guaranteed** |
-| **80.0%** | `0.8514` | **82.1%** | `2.36` | **Guaranteed** |
+| **99.0% (Max Safety)** | `0.9996` | **99.2%** | `1.49` | **Guaranteed** |
+| **98.0%** | `0.9972` | **98.6%** | `1.28` | **Guaranteed** |
+| **95.0% (Clinical Std)** | `0.5720` | **95.5%** | `1.01` | **Guaranteed** |
+| **90.0% (High Precision)** | `0.4077` | **90.4%** | `0.93` | **Guaranteed** |
+| **85.0%** | `0.3015` | **84.5%** | `0.86` | **Guaranteed** |
+| **80.0%** | `0.2198` | **82.0%** | `0.84` | **Guaranteed** |
 
 ---
 

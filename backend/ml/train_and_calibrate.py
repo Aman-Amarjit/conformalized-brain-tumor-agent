@@ -14,7 +14,7 @@ random.seed(SEED)
 np.random.seed(SEED)
 torch.manual_seed(SEED)
 
-DATASET_DIR = '/home/aman-amarjit/Desktop/brain tumour detection/archive/brain_tumor_dataset'
+DATASET_DIR = '/home/aman-amarjit/.cache/kagglehub/datasets/masoudnickparvar/brain-tumor-mri-dataset/versions/2'
 MODEL_SAVE_PATH = 'backend/data/brain_tumor_model.pth'
 CALIB_SAVE_PATH = 'backend/data/calibration_metadata.json'
 CURATED_DIR = 'backend/curated_samples'
@@ -23,49 +23,59 @@ os.makedirs('backend/data', exist_ok=True)
 os.makedirs(CURATED_DIR, exist_ok=True)
 
 CLASSES = ["Glioma", "Meningioma", "Pituitary Tumor", "Normal Scan"]
+CLASS_MAP = {
+    'glioma': 0,
+    'meningioma': 1,
+    'pituitary': 2,
+    'notumor': 3
+}
 NUM_CLASSES = len(CLASSES)
 
-transform = transforms.Compose([
+transform_train = transforms.Compose([
+    transforms.Resize((128, 128)),
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.RandomRotation(degrees=15),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+])
+
+transform_eval = transforms.Compose([
     transforms.Resize((128, 128)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
 def load_and_preprocess_dataset():
+    print(f"Loading new 7,023-sample dataset from: {DATASET_DIR}")
     images = []
     labels = []
     filepaths = []
 
-    yes_dir = os.path.join(DATASET_DIR, 'yes')
-    no_dir = os.path.join(DATASET_DIR, 'no')
-
-    yes_files = sorted([f for f in os.listdir(yes_dir) if f.lower().endswith(('.jpg', '.jpeg', '.png'))])
-    for i, fname in enumerate(yes_files):
-        fpath = os.path.join(yes_dir, fname)
-        try:
-            img = Image.open(fpath).convert('RGB')
-            tensor_img = transform(img)
-            sub_class = i % 3
-            images.append(tensor_img)
-            labels.append(sub_class)
-            filepaths.append((fpath, sub_class))
-        except Exception:
+    splits = ['Training', 'Testing']
+    for split in splits:
+        split_dir = os.path.join(DATASET_DIR, split)
+        if not os.path.exists(split_dir):
             continue
-
-    no_files = sorted([f for f in os.listdir(no_dir) if f.lower().endswith(('.jpg', '.jpeg', '.png'))])
-    for fname in no_files:
-        fpath = os.path.join(no_dir, fname)
-        try:
-            img = Image.open(fpath).convert('RGB')
-            tensor_img = transform(img)
-            images.append(tensor_img)
-            labels.append(3)
-            filepaths.append((fpath, 3))
-        except Exception:
-            continue
+        for folder_name, class_idx in CLASS_MAP.items():
+            folder_path = os.path.join(split_dir, folder_name)
+            if not os.path.exists(folder_path):
+                continue
+            files = sorted([f for f in os.listdir(folder_path) if f.lower().endswith(('.jpg', '.jpeg', '.png'))])
+            for fname in files:
+                fpath = os.path.join(folder_path, fname)
+                try:
+                    img = Image.open(fpath).convert('RGB')
+                    tensor_img = transform_eval(img)
+                    images.append(tensor_img)
+                    labels.append(class_idx)
+                    filepaths.append((fpath, class_idx))
+                except Exception:
+                    continue
 
     images_tensor = torch.stack(images)
     labels_tensor = torch.tensor(labels, dtype=torch.long)
+    print(f"Successfully loaded {len(images_tensor)} real MRI brain scans across {NUM_CLASSES} classes.")
     return images_tensor, labels_tensor, filepaths
 
 class BrainTumorCNN(nn.Module):
@@ -106,7 +116,6 @@ class BrainTumorCNN(nn.Module):
         return x
 
 def train_and_calibrate():
-    print("Loading MRI dataset...")
     X, y, filepaths = load_and_preprocess_dataset()
     num_samples = len(X)
 
@@ -124,16 +133,22 @@ def train_and_calibrate():
     X_cal, y_cal = X[cal_idx], y[cal_idx]
     X_test, y_test = X[test_idx], y[test_idx]
 
+    print(f"Splits: Train = {len(X_train)} | Calibration = {len(X_cal)} | Test = {len(X_test)}")
+
     model = BrainTumorCNN(num_classes=NUM_CLASSES)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=15)
 
     train_dataset = TensorDataset(X_train, y_train)
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 
+    print("Training PyTorch CNN Backbone on new 7,023-sample dataset...")
     model.train()
     for epoch in range(15):
         running_loss = 0.0
+        correct = 0
+        total = 0
         for batch_x, batch_y in train_loader:
             optimizer.zero_grad()
             outputs = model(batch_x)
@@ -141,8 +156,16 @@ def train_and_calibrate():
             loss.backward()
             optimizer.step()
             running_loss += loss.item() * batch_x.size(0)
+            preds = torch.argmax(outputs, dim=1)
+            correct += (preds == batch_y).sum().item()
+            total += batch_y.size(0)
+        scheduler.step()
+        epoch_acc = (correct / total) * 100.0
+        epoch_loss = running_loss / total
+        print(f"Epoch {epoch+1:02d}/15 - Loss: {epoch_loss:.4f} - Train Accuracy: {epoch_acc:.2f}%")
 
     model.eval()
+    print("Computing non-conformity calibration scores on calibration split...")
     with torch.no_grad():
         cal_logits = model(X_cal)
         cal_probs = torch.softmax(cal_logits, dim=1).numpy()
@@ -164,6 +187,7 @@ def train_and_calibrate():
         q_val = np.quantile(cal_scores, np.clip((1 - alpha) * (1 + 1 / n_c), 0.0, 1.0), method='higher')
         quantiles_dict[str(alpha)] = float(q_val)
 
+    print("Evaluating empirical coverage on holdout test set...")
     with torch.no_grad():
         test_logits = model(X_test)
         test_probs = torch.softmax(test_logits, dim=1).numpy()
@@ -187,10 +211,12 @@ def train_and_calibrate():
             "average_set_size": float(avg_set_size),
             "quantile_q_hat": quantiles_dict[str(alpha)]
         }
+        print(f"Alpha {alpha:.2f} (Target {1-alpha:.0%}) -> Empirical Coverage: {emp_coverage*100:.1f}% | Avg Set Size: {avg_set_size:.2f}")
 
     torch.save(model.state_dict(), MODEL_SAVE_PATH)
+    print(f"Saved trained PyTorch model weights to: {MODEL_SAVE_PATH}")
 
-    # Curate Demo DICOM Studies (Realistic Accession IDs)
+    # Curate Demo DICOM Studies from the test set
     curated_info = []
     q_95 = quantiles_dict["0.05"]
     
@@ -240,8 +266,8 @@ def train_and_calibrate():
     metadata = {
         "classes": CLASSES,
         "num_classes": NUM_CLASSES,
-        "n_train": n_train,
-        "n_cal": n_cal,
+        "n_train": len(X_train),
+        "n_cal": len(X_cal),
         "n_test": len(X_test),
         "default_alpha": 0.05,
         "default_target_coverage": 0.95,
