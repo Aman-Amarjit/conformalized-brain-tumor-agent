@@ -69,6 +69,38 @@ $$\mathbb{P}\left( Y_{\text{true}} \in C_{\alpha}(X_{\text{test}}) \right) \ge 1
 
 ---
 
+## 🩺 Can a Doctor or Radiologist Use This System?
+
+**Short Answer:**  
+**Yes, as an interactive Clinical Decision Support (CDS) tool** to assist radiologists—**but NOT as an autonomous replacement for human medical judgment.**
+
+### 🔬 How Radiologists & Clinicians Benefit From This Tool
+
+Traditional AI models are **notoriously overconfident**—often outputting a single label like `"99% Glioma"` even on distorted or borderline scans. This poses severe clinical risks if relied upon blindly.
+
+The **Conformalized Brain Tumor Diagnostic Agent** addresses this directly:
+
+1. **🛡️ Mathematical Risk Guarantee ($\mathbb{P}(Y \in C(X)) \ge 95\%$)**:
+   Instead of guessing a single label, the engine calculates a calibrated prediction set $C_{\alpha}(X)$. A doctor using this tool gets a mathematical guarantee that the patient's true condition is included in the differential set $95\%$ of the time.
+
+2. **🚨 Automated Safety Abstention & Triage Escalation**:
+   - **Clear Scans**: When the scan is straightforward, the system outputs a single label (e.g., `["Normal Scan"]`) with high confidence.
+   - **Ambiguous Scans**: When a scan shows overlapping features (e.g., borderline between *Glioma* and *Meningioma*), the model refuses to make a risky guess. Instead, it expands the prediction set (e.g., `{"Glioma", "Meningioma"}`) and triggers a **Mandatory Radiologist Triage Escalation Alert**, safely flagging the case for expert human review.
+
+3. **⚡ PACS Integration & Workflow Speedup**:
+   With sub-10ms inference latency, the workstation overlay displays non-conformity score quantiles ($q_{\hat{\alpha}}$) and score deltas ($\Delta S_i$) directly inside the DICOM viewport, helping radiologists prioritize emergency scan queues.
+
+### ⚠️ Regulatory & Clinical Constraints (Medical Disclaimer)
+
+| Use Case | Status | Explanation |
+|---|---|---|
+| **Second Opinion / Diagnostic Aid** | **Permitted (Clinical CDS)** | Radiologists can use the prediction sets and score deltas to verify differential diagnoses during reading sessions. |
+| **Emergency Triage Queue Prioritization** | **Permitted (Workflow Triage)** | Hospitals can use the abstention flag to automatically flag ambiguous cases to the top of the reading list. |
+| **Autonomous Unattended Diagnosis** | **PROHIBITED** | No AI model can replace a licensed physician or issue legally binding diagnostic reports without human sign-off. |
+| **Commercial Clinical Deployment** | **Requires Certification** | Real-world hospital deployment requires regulatory clearance (e.g., FDA 510(k) in the US or CE-mark in Europe as Software as a Medical Device). |
+
+---
+
 ## 🚀 Quick Start & Installation
 
 ### 1. Environment Setup & Model Calibration
