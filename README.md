@@ -1,7 +1,7 @@
 # Conformalized Brain Tumor Diagnostic Agent
 
 > **Statistically Guaranteed MRI Prediction Sets & Radiologist Abstention Triage**  
-> *Author:* **Aman Amarjit**
+> *Author:* **Sonali Priyadarshini**
 
 ---
 
@@ -138,6 +138,6 @@ npm run dev
 
 ## 👤 Author & Acknowledgments
 
-- **Author**: **Aman Amarjit**
+- **Author**: **Sonali Priyadarshini**
 - **Dataset**: Brain Tumor MRI Dataset (Axial T2, FLAIR, Coronal T1CE)
 - **Frameworks**: PyTorch, MAPIE, FastAPI, React, TypeScript, Vite

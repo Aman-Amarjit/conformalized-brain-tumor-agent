@@ -80,7 +80,7 @@ def health_check():
     return {
         "status": "healthy",
         "system": "Conformalized Brain Tumor Diagnostic Agent",
-        "author": "Aman Amarjit",
+        "author": "Sonali Priyadarshini",
         "engine_ready": engine.model is not None,
         "classes": engine.classes
     }

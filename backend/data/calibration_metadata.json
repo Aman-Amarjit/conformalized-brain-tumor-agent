@@ -6,55 +6,55 @@
     "Normal Scan"
   ],
   "num_classes": 4,
-  "n_train": 177,
-  "n_cal": 37,
-  "n_test": 39,
+  "n_train": 5040,
+  "n_cal": 1080,
+  "n_test": 1080,
   "default_alpha": 0.05,
   "default_target_coverage": 0.95,
   "quantiles": {
-    "0.01": 0.9900556206703186,
-    "0.02": 0.9900556206703186,
-    "0.05": 0.9900556206703186,
-    "0.1": 0.9385839700698853,
-    "0.15": 0.9135642051696777,
-    "0.2": 0.8513579368591309
+    "0.01": 0.9948644638061523,
+    "0.02": 0.9783397912979126,
+    "0.05": 0.5719617009162903,
+    "0.1": 0.20811021327972412,
+    "0.15": 0.0770423412322998,
+    "0.2": 0.04719454050064087
   },
   "metrics": {
     "0.01": {
       "target_coverage": 0.99,
-      "empirical_coverage": 1.0,
-      "average_set_size": 3.4871794871794872,
-      "quantile_q_hat": 0.9900556206703186
+      "empirical_coverage": 0.9916666666666667,
+      "average_set_size": 1.487962962962963,
+      "quantile_q_hat": 0.9948644638061523
     },
     "0.02": {
       "target_coverage": 0.98,
-      "empirical_coverage": 1.0,
-      "average_set_size": 3.4871794871794872,
-      "quantile_q_hat": 0.9900556206703186
+      "empirical_coverage": 0.9861111111111112,
+      "average_set_size": 1.276851851851852,
+      "quantile_q_hat": 0.9783397912979126
     },
     "0.05": {
       "target_coverage": 0.95,
-      "empirical_coverage": 1.0,
-      "average_set_size": 3.4871794871794872,
-      "quantile_q_hat": 0.9900556206703186
+      "empirical_coverage": 0.9546296296296296,
+      "average_set_size": 1.0083333333333333,
+      "quantile_q_hat": 0.5719617009162903
     },
     "0.1": {
       "target_coverage": 0.9,
-      "empirical_coverage": 0.9230769230769231,
-      "average_set_size": 2.8461538461538463,
-      "quantile_q_hat": 0.9385839700698853
+      "empirical_coverage": 0.9037037037037037,
+      "average_set_size": 0.9314814814814815,
+      "quantile_q_hat": 0.20811021327972412
     },
     "0.15": {
       "target_coverage": 0.85,
-      "empirical_coverage": 0.9230769230769231,
-      "average_set_size": 2.717948717948718,
-      "quantile_q_hat": 0.9135642051696777
+      "empirical_coverage": 0.8453703703703703,
+      "average_set_size": 0.8638888888888889,
+      "quantile_q_hat": 0.0770423412322998
     },
     "0.2": {
       "target_coverage": 0.8,
-      "empirical_coverage": 0.8205128205128205,
-      "average_set_size": 2.358974358974359,
-      "quantile_q_hat": 0.8513579368591309
+      "empirical_coverage": 0.8203703703703704,
+      "average_set_size": 0.837037037037037,
+      "quantile_q_hat": 0.04719454050064087
     }
   },
   "curated_samples": [
@@ -63,9 +63,9 @@
       "filename": "study_conf_1.jpg",
       "type": "confident",
       "label": "ACC-2026-0891_AX_T2.dcm",
-      "true_class": "Normal Scan",
+      "true_class": "Pituitary Tumor",
       "expected_set": [
-        "Normal Scan"
+        "Pituitary Tumor"
       ]
     },
     {
@@ -73,9 +73,9 @@
       "filename": "study_conf_2.jpg",
       "type": "confident",
       "label": "ACC-2026-0318_AX_T2.dcm",
-      "true_class": "Normal Scan",
+      "true_class": "Pituitary Tumor",
       "expected_set": [
-        "Normal Scan"
+        "Pituitary Tumor"
       ]
     },
     {
@@ -83,11 +83,9 @@
       "filename": "study_ambig_1.jpg",
       "type": "ambiguous",
       "label": "ACC-2026-0447_FLAIR.dcm",
-      "true_class": "Pituitary Tumor",
+      "true_class": "Meningioma",
       "expected_set": [
-        "Glioma",
         "Meningioma",
-        "Pituitary Tumor",
         "Normal Scan"
       ]
     },
@@ -96,11 +94,10 @@
       "filename": "study_ambig_2.jpg",
       "type": "ambiguous",
       "label": "ACC-2026-1205_COR_T1.dcm",
-      "true_class": "Glioma",
+      "true_class": "Meningioma",
       "expected_set": [
         "Glioma",
-        "Meningioma",
-        "Pituitary Tumor"
+        "Meningioma"
       ]
     }
   ]
