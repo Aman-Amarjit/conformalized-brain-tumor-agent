@@ -75,6 +75,15 @@ audit_history: List[AuditTrailItem] = [
     ),
 ]
 
+@app.get("/")
+def read_root():
+    return {
+        "message": "Conformalized Brain Tumor Diagnostic Agent API is running live!",
+        "documentation": "/docs",
+        "health_check": "/api/health",
+        "author": "Sonali Priyadarshini"
+    }
+
 @app.get("/api/health")
 def health_check():
     return {
