@@ -6,7 +6,7 @@ import { CoverageQuantileTuner } from './components/CoverageQuantileTuner';
 import { TriageAbstentionBanner } from './components/TriageAbstentionBanner';
 import { DiagnosticAuditTrail, type AuditItem } from './components/DiagnosticAuditTrail';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = typeof window !== 'undefined' && window.location.origin.includes('localhost') ? 'http://localhost:8000' : '';
 
 interface CuratedSample {
   id: string;

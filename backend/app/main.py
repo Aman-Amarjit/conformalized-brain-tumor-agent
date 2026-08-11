@@ -191,3 +191,7 @@ async def predict_mri(
 @app.get("/api/history", response_model=List[AuditTrailItem])
 def get_audit_history():
     return audit_history
+
+FRONTEND_DIST = 'frontend/dist'
+if os.path.exists(FRONTEND_DIST):
+    app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")
