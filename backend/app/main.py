@@ -7,6 +7,7 @@ from typing import List, Optional
 from fastapi import FastAPI, File, UploadFile, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from PIL import Image
 from backend.app.schemas import (
@@ -74,15 +75,6 @@ audit_history: List[AuditTrailItem] = [
         triage_message="⚠️ Ambiguous Scan — prediction set exceeds single diagnosis. Flagged for radiologist review."
     ),
 ]
-
-@app.get("/")
-def read_root():
-    return {
-        "message": "Conformalized Brain Tumor Diagnostic Agent API is running live!",
-        "documentation": "/docs",
-        "health_check": "/api/health",
-        "author": "Sonali Priyadarshini"
-    }
 
 @app.get("/api/health")
 def health_check():
@@ -168,7 +160,6 @@ async def predict_mri(
     result = engine.predict_conformal(pil_img, alpha=alpha)
     result["sample_id"] = sample_id
 
-    # Deduplicate audit log: check if top log item matches this sample and set
     current_time = datetime.now().strftime("%H:%M:%S")
     new_item = AuditTrailItem(
         timestamp=current_time,
@@ -192,6 +183,19 @@ async def predict_mri(
 def get_audit_history():
     return audit_history
 
-FRONTEND_DIST = 'frontend/dist'
-if os.path.exists(FRONTEND_DIST):
-    app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")
+# Serve React frontend — must be LAST, after all API routes
+FRONTEND_DIST = os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'dist')
+FRONTEND_INDEX = os.path.join(FRONTEND_DIST, 'index.html')
+
+@app.get("/", include_in_schema=False)
+async def serve_root():
+    return FileResponse(FRONTEND_INDEX)
+
+@app.get("/{full_path:path}", include_in_schema=False)
+async def serve_spa(full_path: str):
+    # Serve static assets from dist/assets
+    file_path = os.path.join(FRONTEND_DIST, full_path)
+    if os.path.isfile(file_path):
+        return FileResponse(file_path)
+    # All other paths: return index.html for React Router SPA
+    return FileResponse(FRONTEND_INDEX)
