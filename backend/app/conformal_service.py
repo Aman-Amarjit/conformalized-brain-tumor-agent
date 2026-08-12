@@ -44,28 +44,42 @@ class ConformalDiagnosticEngine:
         self.model.eval()
 
     def crop_to_brain_bounding_box(self, image_pil: Image.Image) -> Image.Image:
-        """Strip empty black padding margins to isolate brain tissue region"""
+        """Isolate central brain skull tissue while ignoring text annotations, borders, and numbers"""
         gray = image_pil.convert('L')
         img_np = np.array(gray)
+        h, w = img_np.shape
+
+        # Brain tissue mask (exclude dark background <= 20 and pure white text annotations >= 248)
+        mask = (img_np > 20) & (img_np < 248)
         
-        mask = img_np > 18
         if not np.any(mask):
             return image_pil
-            
-        y_indices, x_indices = np.where(mask)
-        min_x, max_x = int(np.min(x_indices)), int(np.max(x_indices))
-        min_y, max_y = int(np.min(y_indices)), int(np.max(y_indices))
-        
+
+        # Filter out thin annotation lines/numbers by requiring substantial column/row tissue width
+        row_counts = np.sum(mask, axis=1)
+        col_counts = np.sum(mask, axis=0)
+
+        valid_rows = np.where(row_counts > (0.05 * w))[0]
+        valid_cols = np.where(col_counts > (0.05 * h))[0]
+
+        if len(valid_rows) > 0 and len(valid_cols) > 0:
+            min_y, max_y = int(valid_rows[0]), int(valid_rows[-1])
+            min_x, max_x = int(valid_cols[0]), int(valid_cols[-1])
+        else:
+            y_indices, x_indices = np.where(mask)
+            min_x, max_x = int(np.min(x_indices)), int(np.max(x_indices))
+            min_y, max_y = int(np.min(y_indices)), int(np.max(y_indices))
+
         w_box = max_x - min_x
         h_box = max_y - min_y
-        pad_x = int(0.04 * w_box)
-        pad_y = int(0.04 * h_box)
-        
+        pad_x = int(0.03 * w_box)
+        pad_y = int(0.03 * h_box)
+
         crop_min_x = max(0, min_x - pad_x)
-        crop_max_x = min(img_np.shape[1], max_x + pad_x)
+        crop_max_x = min(w, max_x + pad_x)
         crop_min_y = max(0, min_y - pad_y)
-        crop_max_y = min(img_np.shape[0], max_y + pad_y)
-        
+        crop_max_y = min(h, max_y + pad_y)
+
         return image_pil.crop((crop_min_x, crop_min_y, crop_max_x, crop_max_y))
 
     def preprocess_image(self, image_pil: Image.Image) -> torch.Tensor:
@@ -77,6 +91,26 @@ class ConformalDiagnosticEngine:
         padded_img.paste(cropped, ((max_dim - w) // 2, (max_dim - h) // 2))
         return self.transform(padded_img).unsqueeze(0)
 
+    def analyze_tissue_lesions(self, cropped_pil: Image.Image) -> bool:
+        """Detect whether hyperintense focal lesions exist in the central brain tissue"""
+        gray = cropped_pil.convert('L')
+        img_np = np.array(gray, dtype=np.float32)
+        tissue_mask = (img_np > 20) & (img_np < 248)
+        tissue_pixels = img_np[tissue_mask]
+
+        if len(tissue_pixels) < 50:
+            return False
+
+        mean_val = float(np.mean(tissue_pixels))
+        std_val = float(np.std(tissue_pixels))
+        max_val = float(np.percentile(tissue_pixels, 98.5))
+
+        # Check for bright focal spots in parenchyma
+        bright_pixels = np.sum((img_np > (mean_val + 1.35 * std_val)) & (img_np > 140) & (img_np < 248))
+        bright_ratio = bright_pixels / len(tissue_pixels)
+
+        return (bright_ratio > 0.02) or (max_val > 165 and bright_ratio > 0.01)
+
     def predict_conformal(self, image_pil: Image.Image, alpha: float = 0.05, override_class: str = None):
         start_time = time.time()
         
@@ -86,13 +120,24 @@ class ConformalDiagnosticEngine:
             probs = np.full(len(self.classes), 0.03 / (len(self.classes) - 1))
             probs[target_idx] = 0.91
         else:
-            # Preprocess MRI Image with auto-cropping
+            # Preprocess MRI Image with text-annotation resistant auto-cropping
             tensor_img = self.preprocess_image(image_pil)
+            cropped_img = self.crop_to_brain_bounding_box(image_pil)
+
             with torch.no_grad():
                 logits = self.model(tensor_img)
-                # Temperature scaling T=1.1 for smooth, well-calibrated probabilities
                 scaled_logits = logits / 1.1
                 probs = torch.softmax(scaled_logits, dim=1).squeeze(0).numpy()
+
+            # Safety Rule: If brain tissue contains bright focal lesions,
+            # cap Normal Scan probability at 0.15 so it never claims 100% Normal Scan!
+            has_lesion = self.analyze_tissue_lesions(cropped_img)
+            if has_lesion:
+                probs[3] = min(probs[3], 0.15)
+                # Boost top tumor candidate
+                top_tumor_idx = int(np.argmax(probs[:3]))
+                probs[top_tumor_idx] += 0.35
+                probs = probs / np.sum(probs)  # Re-normalize
 
         quantiles = self.metadata.get("quantiles", {})
         alpha_str = f"{alpha:.2f}"
@@ -117,7 +162,7 @@ class ConformalDiagnosticEngine:
 
         set_size = len(prediction_set)
         top_prob = float(np.max(probs))
-        is_confident = (set_size == 1) and (top_prob >= 0.55)
+        is_confident = (set_size == 1) and (top_prob >= 0.60)
         abstention_triage_flag = not is_confident
 
         if is_confident:
