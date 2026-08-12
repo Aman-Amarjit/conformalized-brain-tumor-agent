@@ -245,10 +245,17 @@ export const App: React.FC = () => {
     : [];
 
   let topClass = sortedClasses[0] || null;
+  const secondClass = sortedClasses[1] || null;
   let conditionKey = topClass ? topClass[0] : 'Normal Scan';
 
-  // If scan is inconclusive / ambiguous (set_size > 1 or top confidence < 65%):
-  if (predictionResult && (!predictionResult.is_confident || (topClass && topClass[1] < 0.65))) {
+  // Trigger Inconclusive / Ambiguous Triage whenever top confidence is under 78% or second class exceeds 20%
+  const isAmbiguous = predictionResult && (
+    !predictionResult.is_confident ||
+    (topClass && topClass[1] < 0.78) ||
+    (secondClass && secondClass[1] > 0.20)
+  );
+
+  if (isAmbiguous) {
     conditionKey = 'Inconclusive';
   }
 
