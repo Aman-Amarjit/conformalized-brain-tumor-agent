@@ -46,6 +46,25 @@ transform_eval = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
+def crop_to_brain_bounding_box(image_pil: Image.Image) -> Image.Image:
+    gray = image_pil.convert('L')
+    img_np = np.array(gray)
+    mask = img_np > 18
+    if not np.any(mask):
+        return image_pil
+    y_indices, x_indices = np.where(mask)
+    min_x, max_x = int(np.min(x_indices)), int(np.max(x_indices))
+    min_y, max_y = int(np.min(y_indices)), int(np.max(y_indices))
+    w_box = max_x - min_x
+    h_box = max_y - min_y
+    pad_x = int(0.04 * w_box)
+    pad_y = int(0.04 * h_box)
+    crop_min_x = max(0, min_x - pad_x)
+    crop_max_x = min(img_np.shape[1], max_x + pad_x)
+    crop_min_y = max(0, min_y - pad_y)
+    crop_max_y = min(img_np.shape[0], max_y + pad_y)
+    return image_pil.crop((crop_min_x, crop_min_y, crop_max_x, crop_max_y))
+
 def load_and_preprocess_dataset():
     print(f"Loading new 7,023-sample dataset from: {DATASET_DIR}")
     images = []
@@ -66,7 +85,8 @@ def load_and_preprocess_dataset():
                 fpath = os.path.join(folder_path, fname)
                 try:
                     img = Image.open(fpath).convert('RGB')
-                    tensor_img = transform_eval(img)
+                    cropped = crop_to_brain_bounding_box(img)
+                    tensor_img = transform_eval(cropped)
                     images.append(tensor_img)
                     labels.append(class_idx)
                     filepaths.append((fpath, class_idx))

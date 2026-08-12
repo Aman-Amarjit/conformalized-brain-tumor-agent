@@ -12,90 +12,92 @@
   "default_alpha": 0.05,
   "default_target_coverage": 0.95,
   "quantiles": {
-    "0.01": 0.9948644638061523,
-    "0.02": 0.9783397912979126,
-    "0.05": 0.5719617009162903,
-    "0.1": 0.20811021327972412,
-    "0.15": 0.0770423412322998,
-    "0.2": 0.04719454050064087
+    "0.01": 0.9818475842475891,
+    "0.02": 0.9451583027839661,
+    "0.05": 0.6839845180511475,
+    "0.1": 0.3329440951347351,
+    "0.15": 0.16235721111297607,
+    "0.2": 0.08203887939453125
   },
   "metrics": {
     "0.01": {
       "target_coverage": 0.99,
       "empirical_coverage": 0.9916666666666667,
-      "average_set_size": 1.487962962962963,
-      "quantile_q_hat": 0.9948644638061523
+      "average_set_size": 1.4046296296296297,
+      "quantile_q_hat": 0.9818475842475891
     },
     "0.02": {
       "target_coverage": 0.98,
-      "empirical_coverage": 0.9861111111111112,
-      "average_set_size": 1.276851851851852,
-      "quantile_q_hat": 0.9783397912979126
+      "empirical_coverage": 0.9787037037037037,
+      "average_set_size": 1.2212962962962963,
+      "quantile_q_hat": 0.9451583027839661
     },
     "0.05": {
       "target_coverage": 0.95,
-      "empirical_coverage": 0.9546296296296296,
-      "average_set_size": 1.0083333333333333,
-      "quantile_q_hat": 0.5719617009162903
+      "empirical_coverage": 0.950925925925926,
+      "average_set_size": 1.0398148148148147,
+      "quantile_q_hat": 0.6839845180511475
     },
     "0.1": {
       "target_coverage": 0.9,
-      "empirical_coverage": 0.9037037037037037,
-      "average_set_size": 0.9314814814814815,
-      "quantile_q_hat": 0.20811021327972412
+      "empirical_coverage": 0.9111111111111111,
+      "average_set_size": 0.9574074074074074,
+      "quantile_q_hat": 0.3329440951347351
     },
     "0.15": {
       "target_coverage": 0.85,
-      "empirical_coverage": 0.8453703703703703,
-      "average_set_size": 0.8638888888888889,
-      "quantile_q_hat": 0.0770423412322998
+      "empirical_coverage": 0.8666666666666667,
+      "average_set_size": 0.8981481481481481,
+      "quantile_q_hat": 0.16235721111297607
     },
     "0.2": {
       "target_coverage": 0.8,
-      "empirical_coverage": 0.8203703703703704,
-      "average_set_size": 0.837037037037037,
-      "quantile_q_hat": 0.04719454050064087
+      "empirical_coverage": 0.8101851851851852,
+      "average_set_size": 0.8296296296296296,
+      "quantile_q_hat": 0.08203887939453125
     }
   },
   "curated_samples": [
     {
       "id": "study_conf_1",
       "filename": "study_conf_1.jpg",
-      "type": "Glioma Scan",
+      "type": "confident",
       "label": "ACC-2026-0891_AX_T2.dcm",
-      "true_class": "Glioma",
-      "expected_set": [
-        "Glioma"
-      ]
-    },
-    {
-      "id": "study_conf_2",
-      "filename": "study_conf_2.jpg",
-      "type": "Meningioma Scan",
-      "label": "ACC-2026-0318_AX_T2.dcm",
-      "true_class": "Meningioma",
-      "expected_set": [
-        "Meningioma"
-      ]
-    },
-    {
-      "id": "study_ambig_1",
-      "filename": "study_ambig_1.jpg",
-      "type": "Pituitary Scan",
-      "label": "ACC-2026-0447_FLAIR.dcm",
       "true_class": "Pituitary Tumor",
       "expected_set": [
         "Pituitary Tumor"
       ]
     },
     {
+      "id": "study_conf_2",
+      "filename": "study_conf_2.jpg",
+      "type": "confident",
+      "label": "ACC-2026-0318_AX_T2.dcm",
+      "true_class": "Pituitary Tumor",
+      "expected_set": [
+        "Pituitary Tumor"
+      ]
+    },
+    {
+      "id": "study_ambig_1",
+      "filename": "study_ambig_1.jpg",
+      "type": "ambiguous",
+      "label": "ACC-2026-0447_FLAIR.dcm",
+      "true_class": "Glioma",
+      "expected_set": [
+        "Glioma",
+        "Pituitary Tumor"
+      ]
+    },
+    {
       "id": "study_ambig_2",
       "filename": "study_ambig_2.jpg",
-      "type": "Normal Scan",
+      "type": "ambiguous",
       "label": "ACC-2026-1205_COR_T1.dcm",
-      "true_class": "Normal Scan",
+      "true_class": "Glioma",
       "expected_set": [
-        "Normal Scan"
+        "Glioma",
+        "Meningioma"
       ]
     }
   ]
