@@ -234,70 +234,70 @@ export const App: React.FC = () => {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#000000', color: '#f4f4f5' }}>
       
-      {/* Pure Black Header Navbar */}
+      {/* Mobile-Friendly Header Navbar */}
       <header className="no-print" style={{
-        height: '60px',
+        minHeight: '56px',
         backgroundColor: '#09090b',
         borderBottom: '1px solid #18181b',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '0 2rem',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100
+        padding: '0.6rem 1rem',
+        gap: '0.75rem',
+        flexWrap: 'wrap'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
           <div style={{
-            width: '32px',
-            height: '32px',
+            width: '30px',
+            height: '30px',
             borderRadius: '6px',
             backgroundColor: '#2563eb',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#ffffff'
+            color: '#ffffff',
+            flexShrink: 0
           }}>
-            <Activity size={18} />
+            <Activity size={16} />
           </div>
           <div>
-            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.01em' }}>
+            <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.01em', lineHeight: 1.2 }}>
               Brain MRI Assessment Portal
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#71717a' }}>
+            <div className="header-subtitle" style={{ fontSize: '0.7rem', color: '#71717a', marginTop: '2px' }}>
               Patient Diagnostic Decision Support System
             </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div className="header-badge" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div style={{
             display: 'flex',
             alignItems: 'center',
             gap: '0.4rem',
-            fontSize: '0.78rem',
+            fontSize: '0.75rem',
             color: '#4ade80',
             backgroundColor: '#052e16',
-            padding: '4px 10px',
+            padding: '3px 9px',
             borderRadius: '4px',
             border: '1px solid #14532d',
             fontWeight: 600
           }}>
-            <CheckCircle size={14} />
+            <CheckCircle size={13} />
             <span>Calibrated Reliability Model (95% Guarantee)</span>
           </div>
         </div>
       </header>
 
       {/* Main Body */}
-      <main className="print-full-width" style={{ flex: 1, maxWidth: '1080px', margin: '0 auto', width: '100%', padding: '2rem 1.5rem 4rem' }}>
+      <main className="main-container print-full-width" style={{ flex: 1, maxWidth: '1080px', margin: '0 auto', width: '100%', padding: '1.75rem 1.25rem 3.5rem' }}>
         
         {/* Intro / Banner */}
-        <div className="no-print" style={{ marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.35rem' }}>
+        <div className="no-print" style={{ marginBottom: '1.75rem' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.35rem' }}>
             Brain Scan Image Analysis
           </h1>
-          <p style={{ fontSize: '0.95rem', color: '#a1a1aa', maxWidth: '780px', lineHeight: '1.5' }}>
+          <p style={{ fontSize: '0.9rem', color: '#a1a1aa', maxWidth: '780px', lineHeight: '1.5' }}>
             Select an MRI scan sample or upload an image file to generate a clear, plain-language assessment of structural findings and recommended healthcare steps.
           </p>
         </div>
@@ -305,13 +305,13 @@ export const App: React.FC = () => {
         {/* Upload & Sample Section (Grid) */}
         <div className="no-print" style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '1.5rem',
-          marginBottom: '2rem'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
+          gap: '1.25rem',
+          marginBottom: '1.75rem'
         }}>
           
           {/* Card 1: File Uploader */}
-          <div style={{
+          <div className="card-padding" style={{
             backgroundColor: '#09090b',
             border: '1px solid #18181b',
             borderRadius: '8px',
@@ -319,7 +319,7 @@ export const App: React.FC = () => {
             display: 'flex',
             flexDirection: 'column'
           }}>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Upload size={16} color="#3b82f6" />
               <span>1. Upload Brain MRI Scan</span>
             </div>
@@ -330,7 +330,7 @@ export const App: React.FC = () => {
                 border: '2px dashed #27272a',
                 borderRadius: '6px',
                 backgroundColor: '#121215',
-                padding: '1.75rem 1rem',
+                padding: '1.5rem 0.85rem',
                 textAlign: 'center',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease-in-out',
@@ -344,12 +344,12 @@ export const App: React.FC = () => {
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#3b82f6'; e.currentTarget.style.backgroundColor = '#172554'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#27272a'; e.currentTarget.style.backgroundColor = '#121215'; }}
             >
-              <Upload size={28} color="#71717a" />
+              <Upload size={24} color="#71717a" />
               <div>
-                <div style={{ fontSize: '0.86rem', fontWeight: 600, color: '#ffffff' }}>
+                <div style={{ fontSize: '0.84rem', fontWeight: 600, color: '#ffffff' }}>
                   Click to select scan image
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#71717a', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.72rem', color: '#71717a', marginTop: '2px' }}>
                   Supports DICOM, PNG, JPG files
                 </div>
               </div>
@@ -368,12 +368,12 @@ export const App: React.FC = () => {
 
             {uploadedFile && (
               <div style={{
-                marginTop: '0.85rem',
+                marginTop: '0.75rem',
                 padding: '6px 10px',
                 borderRadius: '4px',
                 backgroundColor: '#172554',
                 border: '1px solid #1d4ed8',
-                fontSize: '0.78rem',
+                fontSize: '0.76rem',
                 color: '#93c5fd',
                 display: 'flex',
                 alignItems: 'center',
@@ -386,7 +386,7 @@ export const App: React.FC = () => {
           </div>
 
           {/* Card 2: Sample Scans */}
-          <div style={{
+          <div className="card-padding" style={{
             backgroundColor: '#09090b',
             border: '1px solid #18181b',
             borderRadius: '8px',
@@ -394,12 +394,12 @@ export const App: React.FC = () => {
             display: 'flex',
             flexDirection: 'column'
           }}>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <FileText size={16} color="#3b82f6" />
               <span>2. Or Select a Test MRI Sample</span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem', flex: 1 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', flex: 1 }}>
               {curatedSamples.map((sample) => {
                 const isSelected = selectedSample?.id === sample.id;
                 return (
@@ -407,7 +407,7 @@ export const App: React.FC = () => {
                     key={sample.id}
                     onClick={() => handleSelectSample(sample)}
                     style={{
-                      padding: '0.6rem',
+                      padding: '0.5rem',
                       borderRadius: '6px',
                       backgroundColor: isSelected ? '#172554' : '#121215',
                       border: `1px solid ${isSelected ? '#3b82f6' : '#27272a'}`,
@@ -415,13 +415,13 @@ export const App: React.FC = () => {
                       transition: 'all 0.15s ease',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.6rem',
+                      gap: '0.5rem',
                       cursor: 'pointer'
                     }}
                   >
                     <div style={{
-                      width: '36px',
-                      height: '36px',
+                      width: '32px',
+                      height: '32px',
                       borderRadius: '4px',
                       overflow: 'hidden',
                       backgroundColor: '#000000',
@@ -434,10 +434,10 @@ export const App: React.FC = () => {
                       />
                     </div>
                     <div style={{ overflow: 'hidden' }}>
-                      <div style={{ fontSize: '0.8rem', fontWeight: 600, color: isSelected ? '#93c5fd' : '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 600, color: isSelected ? '#93c5fd' : '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {sample.true_class}
                       </div>
-                      <div style={{ fontSize: '0.7rem', color: '#71717a' }}>
+                      <div style={{ fontSize: '0.68rem', color: '#71717a' }}>
                         {sample.type}
                       </div>
                     </div>
@@ -450,7 +450,7 @@ export const App: React.FC = () => {
         </div>
 
         {/* Submit Button */}
-        <div className="no-print" style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+        <div className="no-print" style={{ textAlign: 'center', marginBottom: '2rem' }}>
           {errorMessage && (
             <div style={{
               display: 'inline-flex',
@@ -474,28 +474,28 @@ export const App: React.FC = () => {
               onClick={runAnalysis}
               disabled={isLoading}
               style={{
-                padding: '0.85rem 2.25rem',
+                padding: '0.8rem 2rem',
                 borderRadius: '6px',
                 backgroundColor: isLoading ? '#3f3f46' : '#2563eb',
                 color: '#ffffff',
                 fontWeight: 600,
-                fontSize: '0.95rem',
+                fontSize: '0.92rem',
                 boxShadow: isLoading ? 'none' : '0 2px 8px rgba(37, 99, 235, 0.4)',
                 transition: 'all 0.15s ease-in-out',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.6rem',
+                gap: '0.5rem',
                 cursor: isLoading ? 'not-allowed' : 'pointer'
               }}
             >
               {isLoading ? (
                 <>
-                  <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                  <RefreshCw size={17} style={{ animation: 'spin 1s linear infinite' }} />
                   <span>Processing Analysis...</span>
                 </>
               ) : (
                 <>
-                  <Search size={18} />
+                  <Search size={17} />
                   <span>Analyze MRI Scan</span>
                 </>
               )}
@@ -505,29 +505,29 @@ export const App: React.FC = () => {
 
         {/* Results / Findings Display */}
         {predictionResult && (
-          <div ref={reportRef} style={{
+          <div ref={reportRef} className="card-padding" style={{
             backgroundColor: '#09090b',
             border: '1px solid #18181b',
             borderRadius: '8px',
-            padding: '2rem'
+            padding: '1.75rem'
           }}>
             
             {/* Header bar */}
-            <div style={{
+            <div className="report-header" style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              paddingBottom: '1.25rem',
+              paddingBottom: '1rem',
               borderBottom: '1px solid #18181b',
-              marginBottom: '1.5rem',
+              marginBottom: '1.25rem',
               flexWrap: 'wrap',
-              gap: '1rem'
+              gap: '0.75rem'
             }}>
               <div>
-                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Medical Assessment Summary
                 </div>
-                <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#ffffff', marginTop: '2px' }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#ffffff', marginTop: '2px' }}>
                   MRI Diagnostic Findings & Patient Guide
                 </h2>
               </div>
@@ -536,12 +536,12 @@ export const App: React.FC = () => {
                 className="no-print"
                 onClick={handlePrint}
                 style={{
-                  padding: '7px 14px',
+                  padding: '6px 12px',
                   borderRadius: '4px',
                   backgroundColor: '#121215',
                   border: '1px solid #27272a',
                   color: '#e4e4e7',
-                  fontSize: '0.8rem',
+                  fontSize: '0.78rem',
                   fontWeight: 600,
                   display: 'flex',
                   alignItems: 'center',
@@ -549,7 +549,7 @@ export const App: React.FC = () => {
                   cursor: 'pointer'
                 }}
               >
-                <Printer size={14} />
+                <Printer size={13} />
                 <span>Print Report</span>
               </button>
             </div>
@@ -559,15 +559,15 @@ export const App: React.FC = () => {
               backgroundColor: condition.cardBg,
               border: `1px solid ${condition.cardBorder}`,
               borderRadius: '6px',
-              padding: '1.25rem 1.5rem',
-              marginBottom: '1.75rem',
+              padding: '1.15rem 1.25rem',
+              marginBottom: '1.5rem',
               display: 'flex',
               alignItems: 'flex-start',
-              gap: '1rem'
+              gap: '0.85rem'
             }}>
               <div style={{
-                width: '36px',
-                height: '36px',
+                width: '32px',
+                height: '32px',
                 borderRadius: '50%',
                 backgroundColor: condition.badgeBg,
                 display: 'flex',
@@ -576,30 +576,30 @@ export const App: React.FC = () => {
                 color: '#ffffff',
                 flexShrink: 0
               }}>
-                {topClassName === 'Normal Scan' ? <CheckCircle size={20} /> : <AlertTriangle size={20} />}
+                {topClassName === 'Normal Scan' ? <CheckCircle size={18} /> : <AlertTriangle size={18} />}
               </div>
 
               <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '4px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '4px', flexWrap: 'wrap' }}>
                   <span style={{
-                    padding: '2px 8px',
+                    padding: '2px 7px',
                     borderRadius: '4px',
                     backgroundColor: condition.badgeBg,
                     color: condition.badgeColor,
-                    fontSize: '0.72rem',
+                    fontSize: '0.7rem',
                     fontWeight: 700
                   }}>
                     {condition.badgeLabel}
                   </span>
-                  <span style={{ fontSize: '0.82rem', color: '#a1a1aa' }}>
+                  <span style={{ fontSize: '0.78rem', color: '#a1a1aa' }}>
                     Model Agreement: <strong>{topClassProb}% Confidence</strong>
                   </span>
                 </div>
 
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
                   {condition.title}
                 </h3>
-                <p style={{ fontSize: '0.9rem', color: '#e4e4e7', lineHeight: '1.5' }}>
+                <p style={{ fontSize: '0.86rem', color: '#e4e4e7', lineHeight: '1.45' }}>
                   {condition.summary}
                 </p>
               </div>
@@ -608,9 +608,9 @@ export const App: React.FC = () => {
             {/* Content Columns: Visual Scan + Probability Table */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '1.5rem',
-              marginBottom: '1.75rem'
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '1.25rem',
+              marginBottom: '1.5rem'
             }}>
               
               {/* Image Preview Box */}
@@ -618,15 +618,15 @@ export const App: React.FC = () => {
                 backgroundColor: '#121215',
                 border: '1px solid #18181b',
                 borderRadius: '6px',
-                padding: '1rem'
+                padding: '0.85rem'
               }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.75rem' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.65rem' }}>
                   Analyzed MRI Scan Image
                 </div>
                 {selectedImagePreview && (
                   <div style={{
                     width: '100%',
-                    height: '210px',
+                    height: '200px',
                     borderRadius: '4px',
                     backgroundColor: '#000000',
                     overflow: 'hidden',
@@ -649,13 +649,13 @@ export const App: React.FC = () => {
                 backgroundColor: '#121215',
                 border: '1px solid #18181b',
                 borderRadius: '6px',
-                padding: '1rem'
+                padding: '0.85rem'
               }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.75rem' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.65rem' }}>
                   Diagnostic Category Probabilities
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   {Object.entries(predictionResult.softmax_probabilities)
                     .sort((a, b) => b[1] - a[1])
                     .map(([label, prob]) => {
@@ -663,7 +663,7 @@ export const App: React.FC = () => {
                       const isTop = label === topClassName;
                       return (
                         <div key={label}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '3px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '3px' }}>
                             <span style={{ fontWeight: isTop ? 700 : 500, color: isTop ? '#ffffff' : '#a1a1aa' }}>
                               {label}
                             </span>
@@ -695,8 +695,8 @@ export const App: React.FC = () => {
             {/* Explanation and Next Steps */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '1.5rem'
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '1.25rem'
             }}>
               
               {/* Detailed Explanation */}
@@ -704,13 +704,13 @@ export const App: React.FC = () => {
                 backgroundColor: '#121215',
                 border: '1px solid #18181b',
                 borderRadius: '6px',
-                padding: '1.25rem'
+                padding: '1rem'
               }}>
-                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.65rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <Info size={16} color="#3b82f6" />
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Info size={15} color="#3b82f6" />
                   <span>Understanding Your Result</span>
                 </div>
-                <p style={{ fontSize: '0.85rem', color: '#a1a1aa', lineHeight: '1.6' }}>
+                <p style={{ fontSize: '0.82rem', color: '#a1a1aa', lineHeight: '1.5' }}>
                   {condition.explanation}
                 </p>
               </div>
@@ -720,16 +720,16 @@ export const App: React.FC = () => {
                 backgroundColor: '#121215',
                 border: '1px solid #18181b',
                 borderRadius: '6px',
-                padding: '1.25rem'
+                padding: '1rem'
               }}>
-                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.65rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <Calendar size={16} color="#4ade80" />
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Calendar size={15} color="#4ade80" />
                   <span>Recommended Patient Next Steps</span>
                 </div>
-                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
                   {condition.nextSteps.map((step, idx) => (
-                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', fontSize: '0.82rem', color: '#a1a1aa', lineHeight: '1.4' }}>
-                      <ArrowRight size={13} color="#4ade80" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', fontSize: '0.8rem', color: '#a1a1aa', lineHeight: '1.4' }}>
+                      <ArrowRight size={12} color="#4ade80" style={{ flexShrink: 0, marginTop: '2px' }} />
                       <span>{step}</span>
                     </li>
                   ))}
@@ -747,12 +747,12 @@ export const App: React.FC = () => {
       <footer className="no-print" style={{
         borderTop: '1px solid #18181b',
         backgroundColor: '#09090b',
-        padding: '1.25rem',
+        padding: '1rem',
         textAlign: 'center',
-        fontSize: '0.78rem',
+        fontSize: '0.75rem',
         color: '#71717a'
       }}>
-        Brain MRI Assessment Portal • Diagnostic Decision Support System • For Clinical & Educational Evaluation
+        Brain MRI Assessment Portal • Diagnostic Decision Support System
       </footer>
     </div>
   );

@@ -13,6 +13,7 @@ html, body, #root {
   color: #f4f4f5;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 button {
@@ -38,6 +39,27 @@ input, select {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 640px) {
+  .header-badge {
+    display: none !important;
+  }
+  .header-subtitle {
+    display: none !important;
+  }
+  .main-container {
+    padding: 1rem 0.85rem 3rem !important;
+  }
+  .card-padding {
+    padding: 1rem !important;
+  }
+  .report-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+  }
 }
 
 @media print {
