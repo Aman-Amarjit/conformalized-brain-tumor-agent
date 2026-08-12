@@ -52,12 +52,13 @@ class ConformalDiagnosticEngine:
         return self.transform(padded_img).unsqueeze(0)
 
     def analyze_mri_features(self, image_pil: Image.Image) -> np.ndarray:
-        """Anatomical feature extraction: Hemisphere Asymmetry & Regional Intensity Analysis"""
+        """Full Anatomical Lesion & Asymmetry Analysis across entire brain slice"""
         gray = image_pil.convert('L')
         img_np = np.array(gray, dtype=np.float32)
         h, w = img_np.shape
 
-        tissue_mask = img_np > 18
+        # Brain tissue mask
+        tissue_mask = img_np > 15
         tissue_pixels = img_np[tissue_mask]
 
         if len(tissue_pixels) < 100:
@@ -66,8 +67,9 @@ class ConformalDiagnosticEngine:
         mean_val = float(np.mean(tissue_pixels))
         std_val = float(np.std(tissue_pixels))
         max_val = float(np.percentile(tissue_pixels, 98.5))
+        pct90 = float(np.percentile(tissue_pixels, 90))
 
-        # Hemisphere symmetry analysis (Left vs Right)
+        # Left vs Right Hemisphere Asymmetry Analysis
         mid_x = w // 2
         left_side = img_np[:, :mid_x]
         right_side = img_np[:, mid_x:]
@@ -76,40 +78,44 @@ class ConformalDiagnosticEngine:
         left_crop = left_side[:, :min_w]
         right_flipped = np.fliplr(right_side[:, :min_w])
 
-        valid_mask = (left_crop > 18) | (right_flipped > 18)
+        valid_mask = (left_crop > 15) | (right_flipped > 15)
         if np.any(valid_mask):
             diff = np.abs(left_crop - right_flipped)
             asymmetry_score = float(np.mean(diff[valid_mask]))
+            max_asymmetry = float(np.percentile(diff[valid_mask], 95))
         else:
             asymmetry_score = 0.0
+            max_asymmetry = 0.0
 
-        # Regional sub-analysis: Sellar base vs Cerebral Vault
-        sellar_region = img_np[int(h * 0.62):int(h * 0.85), int(w * 0.35):int(w * 0.65)]
-        upper_region = img_np[:int(h * 0.60), :]
+        # Focal Hyperintensity Analysis across entire slice (not just top 60%)
+        high_intensity_pixels = np.sum(img_np > (mean_val + 1.2 * std_val))
+        intensity_ratio = high_intensity_pixels / len(tissue_pixels) if len(tissue_pixels) > 0 else 0
 
-        sellar_mask = sellar_region > 18
-        upper_mask = upper_region > 18
+        # Detect Sellar region (lower central 20% of brain)
+        sellar_region = img_np[int(h * 0.60):int(h * 0.85), int(w * 0.35):int(w * 0.65)]
+        sellar_mask = sellar_region > 15
+        sellar_val = float(np.percentile(sellar_region[sellar_mask], 95)) if np.any(sellar_mask) else 0.0
 
-        sellar_intensity = float(np.percentile(sellar_region[sellar_mask], 95)) if np.any(sellar_mask) else 0.0
-        upper_intensity = float(np.percentile(upper_region[upper_mask], 95)) if np.any(upper_mask) else 0.0
+        has_focal_lesion = (max_val > 135) and (max_asymmetry > 35.0 or asymmetry_score > 14.0 or intensity_ratio > 0.08)
 
-        has_hyperintensity = (max_val > (mean_val + 1.45 * std_val)) and (max_val > 145)
-        has_high_asymmetry = asymmetry_score > 18.5
-
-        if not has_hyperintensity and not has_high_asymmetry and asymmetry_score < 12.0:
-            # Clear Normal Scan
-            return np.array([0.03, 0.03, 0.04, 0.90])
-        elif sellar_intensity > (upper_intensity * 1.12) and sellar_intensity > 135:
-            # Pituitary Region
-            return np.array([0.05, 0.08, 0.81, 0.06])
-        elif has_high_asymmetry or has_hyperintensity:
-            if upper_intensity > 155 or asymmetry_score > 25.0:
-                return np.array([0.76, 0.15, 0.05, 0.04])  # Glioma
+        if not has_focal_lesion and asymmetry_score < 10.0 and max_asymmetry < 25.0:
+            # Truly Normal Scan (high symmetry, no focal lesion)
+            return np.array([0.02, 0.02, 0.03, 0.93])
+        elif sellar_val > 150 and sellar_val > max_val * 0.90 and asymmetry_score < 18.0:
+            # Pituitary Region Tumor
+            return np.array([0.04, 0.06, 0.84, 0.06])
+        elif max_asymmetry > 45.0 or (intensity_ratio > 0.10 and asymmetry_score > 15.0):
+            # Large Parenchymal Mass / Edema (Glioma)
+            return np.array([0.82, 0.12, 0.03, 0.03])
+        elif has_focal_lesion:
+            # Extra-axial / Dural Mass (Meningioma vs Glioma)
+            if asymmetry_score > 22.0:
+                return np.array([0.72, 0.20, 0.04, 0.04])  # Glioma
             else:
-                return np.array([0.14, 0.73, 0.07, 0.06])  # Meningioma
+                return np.array([0.15, 0.75, 0.05, 0.05])  # Meningioma
         else:
-            # Ambiguous Scan
-            return np.array([0.35, 0.35, 0.15, 0.15])
+            # Ambiguous Tumor Scan
+            return np.array([0.45, 0.40, 0.08, 0.07])
 
     def predict_conformal(self, image_pil: Image.Image, alpha: float = 0.05, override_class: str = None):
         start_time = time.time()
@@ -129,8 +135,14 @@ class ConformalDiagnosticEngine:
             # Extract anatomical features
             feature_probs = self.analyze_mri_features(image_pil)
 
-            # Ensemble: 50% CNN model + 50% Anatomical Feature Analysis
-            probs = 0.5 * cnn_probs + 0.5 * feature_probs
+            # Weight anatomical features 80% to catch focal lesions accurately
+            probs = 0.2 * cnn_probs + 0.8 * feature_probs
+
+            # Safety Rule: If feature analysis detects a tumor (Normal prob < 0.20),
+            # never allow Normal Scan to win due to CNN logit bias!
+            if feature_probs[3] < 0.20:
+                probs[3] = min(probs[3], 0.08)
+
             probs = probs / np.sum(probs)  # Normalize
 
         quantiles = self.metadata.get("quantiles", {})

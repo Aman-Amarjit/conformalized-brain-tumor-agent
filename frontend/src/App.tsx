@@ -222,10 +222,21 @@ export const App: React.FC = () => {
     window.print();
   };
 
-  // Top probability class
-  const topClass = predictionResult
-    ? Object.entries(predictionResult.softmax_probabilities).sort((a, b) => b[1] - a[1])[0]
-    : null;
+  // Top probability class selection with Clinical Safety Guardrail
+  const sortedClasses = predictionResult
+    ? Object.entries(predictionResult.softmax_probabilities).sort((a, b) => b[1] - a[1])
+    : [];
+
+  let topClass = sortedClasses[0] || null;
+
+  // Medical Safety Rule: If top class is "Normal Scan" but any tumor class has >= 15% probability,
+  // reassign topClass to the highest tumor class (e.g. Glioma) to prevent dangerous false negatives!
+  if (topClass && topClass[0] === 'Normal Scan' && sortedClasses.length > 1) {
+    const highestTumor = sortedClasses.find(([cls, prob]) => cls !== 'Normal Scan' && prob >= 0.15);
+    if (highestTumor) {
+      topClass = highestTumor;
+    }
+  }
 
   const topClassName = topClass ? topClass[0] : 'Normal Scan';
   const topClassProb = topClass ? Math.round(topClass[1] * 100) : 0;
