@@ -91,26 +91,6 @@ class ConformalDiagnosticEngine:
         padded_img.paste(cropped, ((max_dim - w) // 2, (max_dim - h) // 2))
         return self.transform(padded_img).unsqueeze(0)
 
-    def analyze_tissue_lesions(self, cropped_pil: Image.Image) -> bool:
-        """Detect whether hyperintense focal lesions exist in the central brain tissue"""
-        gray = cropped_pil.convert('L')
-        img_np = np.array(gray, dtype=np.float32)
-        tissue_mask = (img_np > 20) & (img_np < 248)
-        tissue_pixels = img_np[tissue_mask]
-
-        if len(tissue_pixels) < 50:
-            return False
-
-        mean_val = float(np.mean(tissue_pixels))
-        std_val = float(np.std(tissue_pixels))
-        max_val = float(np.percentile(tissue_pixels, 98.5))
-
-        # Check for bright focal spots in parenchyma
-        bright_pixels = np.sum((img_np > (mean_val + 1.35 * std_val)) & (img_np > 140) & (img_np < 248))
-        bright_ratio = bright_pixels / len(tissue_pixels)
-
-        return (bright_ratio > 0.02) or (max_val > 165 and bright_ratio > 0.01)
-
     def predict_conformal(self, image_pil: Image.Image, alpha: float = 0.05, override_class: str = None):
         start_time = time.time()
         
@@ -122,22 +102,9 @@ class ConformalDiagnosticEngine:
         else:
             # Preprocess MRI Image with text-annotation resistant auto-cropping
             tensor_img = self.preprocess_image(image_pil)
-            cropped_img = self.crop_to_brain_bounding_box(image_pil)
-
             with torch.no_grad():
                 logits = self.model(tensor_img)
-                scaled_logits = logits / 1.1
-                probs = torch.softmax(scaled_logits, dim=1).squeeze(0).numpy()
-
-            # Safety Rule: If brain tissue contains bright focal lesions,
-            # cap Normal Scan probability at 0.15 so it never claims 100% Normal Scan!
-            has_lesion = self.analyze_tissue_lesions(cropped_img)
-            if has_lesion:
-                probs[3] = min(probs[3], 0.15)
-                # Boost top tumor candidate
-                top_tumor_idx = int(np.argmax(probs[:3]))
-                probs[top_tumor_idx] += 0.35
-                probs = probs / np.sum(probs)  # Re-normalize
+                probs = torch.softmax(logits, dim=1).squeeze(0).numpy()
 
         quantiles = self.metadata.get("quantiles", {})
         alpha_str = f"{alpha:.2f}"
@@ -162,7 +129,7 @@ class ConformalDiagnosticEngine:
 
         set_size = len(prediction_set)
         top_prob = float(np.max(probs))
-        is_confident = (set_size == 1) and (top_prob >= 0.60)
+        is_confident = (set_size == 1) and (top_prob >= 0.50)
         abstention_triage_flag = not is_confident
 
         if is_confident:
