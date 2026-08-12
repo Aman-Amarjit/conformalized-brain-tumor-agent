@@ -11,7 +11,8 @@ import {
   Activity,
   ArrowRight,
   Info,
-  Calendar
+  Calendar,
+  HelpCircle
 } from 'lucide-react';
 
 const API_BASE = typeof window !== 'undefined' && window.location.origin.includes('localhost')
@@ -94,6 +95,22 @@ const CONDITION_INFO: Record<string, ConditionDetail> = {
       'Consult an Endocrinologist and a Neurosurgeon for specialized evaluation.',
       'Discuss whether hormone level blood panels are recommended.',
       'Schedule a visual field assessment if you notice subtle visual changes.'
+    ]
+  },
+  'Inconclusive': {
+    title: 'Inconclusive Findings — Radiologist Review Flagged',
+    badgeLabel: 'Ambiguous Scan — Safety Abstention Triage',
+    badgeBg: '#d97706',
+    badgeColor: '#ffffff',
+    badgeBorder: '#f59e0b',
+    cardBg: '#1c1917',
+    cardBorder: '#78350f',
+    summary: 'The scan shows complex or borderline features where multiple diagnostic possibilities overlap.',
+    explanation: 'When an MRI scan contains minor white matter spots, image annotations, or overlapping structural characteristics, the conformal AI engine refrains from making a single guess. Instead, it safely flags the scan for expert radiologist review.',
+    nextSteps: [
+      'Consult a Neurologist or Radiologist to evaluate the full MRI slice series.',
+      'Provide your physician with your clinical history regarding symptoms or vascular factors.',
+      'Discuss whether follow-up contrast-enhanced imaging is recommended.'
     ]
   }
 };
@@ -222,25 +239,21 @@ export const App: React.FC = () => {
     window.print();
   };
 
-  // Top probability class selection with Clinical Safety Guardrail
+  // Calibrated Class Selection Logic:
   const sortedClasses = predictionResult
     ? Object.entries(predictionResult.softmax_probabilities).sort((a, b) => b[1] - a[1])
     : [];
 
   let topClass = sortedClasses[0] || null;
+  let conditionKey = topClass ? topClass[0] : 'Normal Scan';
 
-  // Medical Safety Rule: If top class is "Normal Scan" but any tumor class has >= 15% probability,
-  // reassign topClass to the highest tumor class (e.g. Glioma) to prevent dangerous false negatives!
-  if (topClass && topClass[0] === 'Normal Scan' && sortedClasses.length > 1) {
-    const highestTumor = sortedClasses.find(([cls, prob]) => cls !== 'Normal Scan' && prob >= 0.15);
-    if (highestTumor) {
-      topClass = highestTumor;
-    }
+  // If scan is inconclusive / ambiguous (set_size > 1 or top confidence < 65%):
+  if (predictionResult && (!predictionResult.is_confident || (topClass && topClass[1] < 0.65))) {
+    conditionKey = 'Inconclusive';
   }
 
-  const topClassName = topClass ? topClass[0] : 'Normal Scan';
   const topClassProb = topClass ? Math.round(topClass[1] * 100) : 0;
-  const condition = CONDITION_INFO[topClassName] || CONDITION_INFO['Normal Scan'];
+  const condition = CONDITION_INFO[conditionKey] || CONDITION_INFO['Normal Scan'];
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#000000', color: '#f4f4f5' }}>
@@ -590,7 +603,13 @@ export const App: React.FC = () => {
                 color: '#ffffff',
                 flexShrink: 0
               }}>
-                {topClassName === 'Normal Scan' ? <CheckCircle size={18} /> : <AlertTriangle size={18} />}
+                {conditionKey === 'Normal Scan' ? (
+                  <CheckCircle size={18} />
+                ) : conditionKey === 'Inconclusive' ? (
+                  <HelpCircle size={18} />
+                ) : (
+                  <AlertTriangle size={18} />
+                )}
               </div>
 
               <div style={{ flex: 1 }}>
@@ -674,7 +693,7 @@ export const App: React.FC = () => {
                     .sort((a, b) => b[1] - a[1])
                     .map(([label, prob]) => {
                       const percentage = Math.round(prob * 100);
-                      const isTop = label === topClassName;
+                      const isTop = label === topClass?.[0];
                       return (
                         <div key={label}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '3px' }}>
