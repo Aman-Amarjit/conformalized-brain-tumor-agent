@@ -1,177 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg-primary: #000000;
-  --bg-surface: #000000;
-  --bg-card: #000000;
-  --bg-panel: #000000;
-
-  --border-subtle: #18181b;
-  --border-strong: #27272a;
-  --border-cyan: #0891b2;
-
-  --text-main: #f4f4f5;
-  --text-muted: #a1a1aa;
-  --text-dim: #52525b;
-
-  --accent-cyan: #06b6d4;
-  --accent-emerald: #10b981;
-  --accent-amber: #f59e0b;
-  --accent-red: #ef4444;
-
-  --font-sans: 'Inter', -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --bg: #f0f4f8;
+  --surface: #ffffff;
+  --surface2: #f8fafc;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --accent: #6366f1;
+  --accent-light: #eef2ff;
+  --green: #10b981;
+  --green-light: #d1fae5;
+  --orange: #f59e0b;
+  --orange-light: #fef3c7;
+  --red: #ef4444;
+  --red-light: #fee2e2;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow: 0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.14);
+  --radius: 16px;
+  --radius-sm: 10px;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+html, body, #root { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
 
-html, body, #root, div, main, header, section, article {
-  background-color: #000000 !important;
-  color: var(--text-main);
-  font-family: var(--font-sans);
-}
+button { font-family: inherit; cursor: pointer; border: none; outline: none; }
 
-body {
-  min-height: 100vh;
-  line-height: 1.4;
-  -webkit-font-smoothing: antialiased;
-  user-select: none;
-}
-
-code, kbd, pre, samp, .mono {
-  font-family: var(--font-mono);
-}
-
-/* PACS Medical Panel - Pure Pitch Black */
-.pacs-panel {
-  background: #000000 !important;
-  border: 1px solid #18181b !important;
-  border-radius: 2px;
-  padding: 1rem;
-}
-
-.pacs-header {
-  font-size: 0.725rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #18181b;
-  margin-bottom: 0.75rem;
-  background: #000000 !important;
-}
-
-/* Medical Data Badge - Pure Black Background */
-.pacs-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.15rem 0.45rem;
-  border-radius: 2px;
-  font-size: 0.675rem;
-  font-weight: 700;
-  font-family: var(--font-mono);
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  background: #000000 !important;
-}
-
-.pacs-badge-confident {
-  color: #10b981;
-  border: 1px solid #059669;
-}
-
-.pacs-badge-triage {
-  color: #f59e0b;
-  border: 1px solid #d97706;
-}
-
-.pacs-badge-info {
-  color: #06b6d4;
-  border: 1px solid #0891b2;
-}
-
-/* Clinical Action Buttons - Pure Black */
-.pacs-btn {
-  background: #000000 !important;
-  color: #f4f4f5;
-  border: 1px solid #27272a;
-  padding: 0.5rem 0.875rem;
-  border-radius: 2px;
-  font-size: 0.775rem;
-  font-weight: 600;
-  font-family: var(--font-mono);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.15s ease;
-}
-
-.pacs-btn:hover {
-  background: #09090b !important;
-  border-color: #06b6d4;
-}
-
-.pacs-btn-primary {
-  background: #000000 !important;
-  color: #38bdf8;
-  border: 1px solid #0284c7;
-}
-
-.pacs-btn-primary:hover {
-  background: #0369a1 !important;
-  color: #ffffff;
-}
-
-/* Range Slider */
-input[type=range] {
-  -webkit-appearance: none;
-  width: 100%;
-  background: #18181b;
-  height: 4px;
-  border-radius: 2px;
-  outline: none;
-}
-
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 2px;
-  background: #06b6d4;
-  cursor: pointer;
-  border: 1px solid #38bdf8;
-}
-
-/* DICOM Viewer HUD Overlay */
-.dicom-hud {
-  position: absolute;
-  font-family: var(--font-mono);
-  font-size: 0.675rem;
-  color: #06b6d4;
-  text-shadow: 0 1px 2px rgba(0,0,0,1);
-  pointer-events: none;
-  line-height: 1.3;
-}
-
-/* Scrollbars */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-::-webkit-scrollbar-track {
-  background: #000000;
-}
-::-webkit-scrollbar-thumb {
-  background: #27272a;
-  border-radius: 2px;
-}
+input, select { font-family: inherit; }
