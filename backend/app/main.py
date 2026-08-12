@@ -184,18 +184,19 @@ def get_audit_history():
     return audit_history
 
 # Serve React frontend — must be LAST, after all API routes
-FRONTEND_DIST = os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'dist')
-FRONTEND_INDEX = os.path.join(FRONTEND_DIST, 'index.html')
+FRONTEND_DIST = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'dist'))
+ASSETS_DIR = os.path.join(FRONTEND_DIST, 'assets')
+
+if os.path.exists(ASSETS_DIR):
+    app.mount("/assets", StaticFiles(directory=ASSETS_DIR), name="assets")
 
 @app.get("/", include_in_schema=False)
 async def serve_root():
-    return FileResponse(FRONTEND_INDEX)
+    return FileResponse(os.path.join(FRONTEND_DIST, 'index.html'))
 
 @app.get("/{full_path:path}", include_in_schema=False)
 async def serve_spa(full_path: str):
-    # Serve static assets from dist/assets
     file_path = os.path.join(FRONTEND_DIST, full_path)
     if os.path.isfile(file_path):
         return FileResponse(file_path)
-    # All other paths: return index.html for React Router SPA
-    return FileResponse(FRONTEND_INDEX)
+    return FileResponse(os.path.join(FRONTEND_DIST, 'index.html'))
