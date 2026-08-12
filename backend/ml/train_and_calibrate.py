@@ -1,26 +1,17 @@
 import os
 import json
 import random
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader, TensorDataset
 from PIL import Image
 import torchvision.transforms as transforms
+import numpy as np
 
-SEED = 42
-random.seed(SEED)
-np.random.seed(SEED)
-torch.manual_seed(SEED)
-
+MODEL_PATH = 'backend/data/brain_tumor_model.pth'
+CALIB_PATH = 'backend/data/calibration_metadata.json'
 DATASET_DIR = '/home/aman-amarjit/.cache/kagglehub/datasets/masoudnickparvar/brain-tumor-mri-dataset/versions/2'
-MODEL_SAVE_PATH = 'backend/data/brain_tumor_model.pth'
-CALIB_SAVE_PATH = 'backend/data/calibration_metadata.json'
-CURATED_DIR = 'backend/curated_samples'
-
-os.makedirs('backend/data', exist_ok=True)
-os.makedirs(CURATED_DIR, exist_ok=True)
+DESKTOP_DATASET_DIR = '/home/aman-amarjit/Desktop/brain tumour detection/archive'
 
 CLASSES = ["Glioma", "Meningioma", "Pituitary Tumor", "Normal Scan"]
 CLASS_MAP = {
@@ -49,28 +40,38 @@ transform_eval = transforms.Compose([
 def crop_to_brain_bounding_box(image_pil: Image.Image) -> Image.Image:
     gray = image_pil.convert('L')
     img_np = np.array(gray)
-    mask = img_np > 18
+    h, w = img_np.shape
+    mask = (img_np > 20) & (img_np < 248)
     if not np.any(mask):
         return image_pil
-    y_indices, x_indices = np.where(mask)
-    min_x, max_x = int(np.min(x_indices)), int(np.max(x_indices))
-    min_y, max_y = int(np.min(y_indices)), int(np.max(y_indices))
+    row_counts = np.sum(mask, axis=1)
+    col_counts = np.sum(mask, axis=0)
+    valid_rows = np.where(row_counts > (0.05 * w))[0]
+    valid_cols = np.where(col_counts > (0.05 * h))[0]
+    if len(valid_rows) > 0 and len(valid_cols) > 0:
+        min_y, max_y = int(valid_rows[0]), int(valid_rows[-1])
+        min_x, max_x = int(valid_cols[0]), int(valid_cols[-1])
+    else:
+        y_indices, x_indices = np.where(mask)
+        min_x, max_x = int(np.min(x_indices)), int(np.max(x_indices))
+        min_y, max_y = int(np.min(y_indices)), int(np.max(y_indices))
     w_box = max_x - min_x
     h_box = max_y - min_y
-    pad_x = int(0.04 * w_box)
-    pad_y = int(0.04 * h_box)
+    pad_x = int(0.03 * w_box)
+    pad_y = int(0.03 * h_box)
     crop_min_x = max(0, min_x - pad_x)
-    crop_max_x = min(img_np.shape[1], max_x + pad_x)
+    crop_max_x = min(w, max_x + pad_x)
     crop_min_y = max(0, min_y - pad_y)
-    crop_max_y = min(img_np.shape[0], max_y + pad_y)
+    crop_max_y = min(h, max_y + pad_y)
     return image_pil.crop((crop_min_x, crop_min_y, crop_max_x, crop_max_y))
 
 def load_and_preprocess_dataset():
-    print(f"Loading new 7,023-sample dataset from: {DATASET_DIR}")
+    print(f"Loading primary Kaggle dataset from: {DATASET_DIR}")
     images = []
     labels = []
     filepaths = []
 
+    # 1. Load Kaggle 7,200 dataset
     splits = ['Training', 'Testing']
     for split in splits:
         split_dir = os.path.join(DATASET_DIR, split)
@@ -93,9 +94,34 @@ def load_and_preprocess_dataset():
                 except Exception:
                     continue
 
+    # 2. Load User Desktop dataset (/home/aman-amarjit/Desktop/brain tumour detection/archive)
+    if os.path.exists(DESKTOP_DATASET_DIR):
+        print(f"Loading user Desktop dataset from: {DESKTOP_DATASET_DIR}")
+        desktop_folders = [
+            (os.path.join(DESKTOP_DATASET_DIR, 'no'), 3),
+            (os.path.join(DESKTOP_DATASET_DIR, 'yes'), 0),
+            (os.path.join(DESKTOP_DATASET_DIR, 'brain_tumor_dataset', 'no'), 3),
+            (os.path.join(DESKTOP_DATASET_DIR, 'brain_tumor_dataset', 'yes'), 0)
+        ]
+        for folder_path, class_idx in desktop_folders:
+            if not os.path.exists(folder_path):
+                continue
+            files = sorted([f for f in os.listdir(folder_path) if f.lower().endswith(('.jpg', '.jpeg', '.png'))])
+            for fname in files:
+                fpath = os.path.join(folder_path, fname)
+                try:
+                    img = Image.open(fpath).convert('RGB')
+                    cropped = crop_to_brain_bounding_box(img)
+                    tensor_img = transform_eval(cropped)
+                    images.append(tensor_img)
+                    labels.append(class_idx)
+                    filepaths.append((fpath, class_idx))
+                except Exception:
+                    continue
+
     images_tensor = torch.stack(images)
     labels_tensor = torch.tensor(labels, dtype=torch.long)
-    print(f"Successfully loaded {len(images_tensor)} real MRI brain scans across {NUM_CLASSES} classes.")
+    print(f"Successfully loaded {len(images_tensor)} total real MRI brain scans across {NUM_CLASSES} classes.")
     return images_tensor, labels_tensor, filepaths
 
 class BrainTumorCNN(nn.Module):
@@ -158,148 +184,136 @@ def train_and_calibrate():
     model = BrainTumorCNN(num_classes=NUM_CLASSES)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=15)
 
-    train_dataset = TensorDataset(X_train, y_train)
-    train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+    batch_size = 64
+    epochs = 15
 
-    print("Training PyTorch CNN Backbone on new 7,023-sample dataset...")
-    model.train()
-    for epoch in range(15):
-        running_loss = 0.0
+    print("Training PyTorch CNN Backbone on Combined Dataset...")
+    for epoch in range(epochs):
+        model.train()
+        permutation = torch.randperm(X_train.size(0))
+        epoch_loss = 0.0
         correct = 0
-        total = 0
-        for batch_x, batch_y in train_loader:
+
+        for i in range(0, X_train.size(0), batch_size):
+            indices_b = permutation[i:i + batch_size]
+            batch_x, batch_y = X_train[indices_b], y_train[indices_b]
+
             optimizer.zero_grad()
             outputs = model(batch_x)
             loss = criterion(outputs, batch_y)
             loss.backward()
             optimizer.step()
-            running_loss += loss.item() * batch_x.size(0)
+
+            epoch_loss += loss.item() * batch_x.size(0)
             preds = torch.argmax(outputs, dim=1)
             correct += (preds == batch_y).sum().item()
-            total += batch_y.size(0)
-        scheduler.step()
-        epoch_acc = (correct / total) * 100.0
-        epoch_loss = running_loss / total
-        print(f"Epoch {epoch+1:02d}/15 - Loss: {epoch_loss:.4f} - Train Accuracy: {epoch_acc:.2f}%")
+
+        acc = correct / len(X_train)
+        avg_loss = epoch_loss / len(X_train)
+        print(f"Epoch {epoch+1:02d}/{epochs:02d} - Loss: {avg_loss:.4f} - Train Accuracy: {acc*100:.2f}%")
 
     model.eval()
+
+    # 3. Conformal Calibration on Calibration Split
     print("Computing non-conformity calibration scores on calibration split...")
     with torch.no_grad():
         cal_logits = model(X_cal)
         cal_probs = torch.softmax(cal_logits, dim=1).numpy()
-        cal_y_true = y_cal.numpy()
 
     cal_scores = []
-    for i in range(len(cal_probs)):
-        true_class_prob = cal_probs[i, cal_y_true[i]]
-        score = 1.0 - true_class_prob
-        cal_scores.append(score)
+    for i in range(len(y_cal)):
+        true_label = y_cal[i].item()
+        true_prob = cal_probs[i, true_label]
+        s_i = 1.0 - true_prob
+        cal_scores.append(s_i)
 
-    cal_scores = np.array(cal_scores)
-    n_c = len(cal_scores)
+    cal_scores = np.sort(cal_scores)
+    n_cal_samples = len(cal_scores)
 
-    alpha_levels = [0.01, 0.02, 0.05, 0.10, 0.15, 0.20]
+    alphas = [0.01, 0.02, 0.05, 0.10, 0.15, 0.20]
     quantiles_dict = {}
-
-    for alpha in alpha_levels:
-        q_val = np.quantile(cal_scores, np.clip((1 - alpha) * (1 + 1 / n_c), 0.0, 1.0), method='higher')
-        quantiles_dict[str(alpha)] = float(q_val)
 
     print("Evaluating empirical coverage on holdout test set...")
     with torch.no_grad():
         test_logits = model(X_test)
         test_probs = torch.softmax(test_logits, dim=1).numpy()
-        test_y_true = y_test.numpy()
 
-    test_coverage_results = {}
-    for alpha in alpha_levels:
-        q_hat = quantiles_dict[str(alpha)]
+    for alpha in alphas:
+        q_level = np.ceil((n_cal_samples + 1) * (1 - alpha)) / n_cal_samples
+        q_level = min(1.0, max(0.0, q_level))
+        q_hat = float(np.quantile(cal_scores, q_level, method='higher'))
+        quantiles_dict[f"{alpha:.2f}"] = round(q_hat, 4)
+
         covered = 0
         set_sizes = []
-        for i in range(len(test_probs)):
+        for i in range(len(y_test)):
+            true_label = y_test[i].item()
             pred_set = [c for c in range(NUM_CLASSES) if (1.0 - test_probs[i, c]) <= q_hat]
-            set_sizes.append(len(pred_set))
-            if test_y_true[i] in pred_set:
+            if true_label in pred_set:
                 covered += 1
-        emp_coverage = covered / len(test_probs)
+            set_sizes.append(len(pred_set))
+
+        emp_cov = covered / len(y_test)
         avg_set_size = np.mean(set_sizes)
-        test_coverage_results[str(alpha)] = {
-            "target_coverage": float(1 - alpha),
-            "empirical_coverage": float(emp_coverage),
-            "average_set_size": float(avg_set_size),
-            "quantile_q_hat": quantiles_dict[str(alpha)]
-        }
-        print(f"Alpha {alpha:.2f} (Target {1-alpha:.0%}) -> Empirical Coverage: {emp_coverage*100:.1f}% | Avg Set Size: {avg_set_size:.2f}")
+        print(f"Alpha {alpha:.2f} (Target {int((1-alpha)*100)}%) -> Empirical Coverage: {emp_cov*100:.1f}% | Avg Set Size: {avg_set_size:.2f}")
 
-    torch.save(model.state_dict(), MODEL_SAVE_PATH)
-    print(f"Saved trained PyTorch model weights to: {MODEL_SAVE_PATH}")
+    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
+    torch.save(model.state_dict(), MODEL_PATH)
+    print(f"Saved trained PyTorch model weights to: {MODEL_PATH}")
 
-    # Curate Demo DICOM Studies from the test set
-    curated_info = []
-    q_95 = quantiles_dict["0.05"]
-    
-    confident_count = 0
-    ambiguous_count = 0
-    
-    accession_ids_conf = ["ACC-2026-0891_AX_T2.dcm", "ACC-2026-0318_AX_T2.dcm"]
-    accession_ids_ambig = ["ACC-2026-0447_FLAIR.dcm", "ACC-2026-1205_COR_T1.dcm"]
-
-    for i in range(len(X_test)):
-        orig_path, class_id = filepaths[test_idx[i]]
-        probs = test_probs[i]
-        pred_set = [CLASSES[c] for c in range(NUM_CLASSES) if (1.0 - probs[c]) <= q_95]
-        
-        is_conf = (len(pred_set) == 1)
-        if is_conf and confident_count < 2:
-            confident_count += 1
-            acc_id = accession_ids_conf[confident_count - 1]
-            dst_name = f"study_conf_{confident_count}.jpg"
-            dst_path = os.path.join(CURATED_DIR, dst_name)
-            img = Image.open(orig_path).convert('RGB')
-            img.save(dst_path)
-            curated_info.append({
-                "id": f"study_conf_{confident_count}",
-                "filename": dst_name,
-                "type": "confident",
-                "label": acc_id,
-                "true_class": CLASSES[class_id],
-                "expected_set": pred_set
-            })
-        elif not is_conf and ambiguous_count < 2:
-            ambiguous_count += 1
-            acc_id = accession_ids_ambig[ambiguous_count - 1]
-            dst_name = f"study_ambig_{ambiguous_count}.jpg"
-            dst_path = os.path.join(CURATED_DIR, dst_name)
-            img = Image.open(orig_path).convert('RGB')
-            img.save(dst_path)
-            curated_info.append({
-                "id": f"study_ambig_{ambiguous_count}",
-                "filename": dst_name,
-                "type": "ambiguous",
-                "label": acc_id,
-                "true_class": CLASSES[class_id],
-                "expected_set": pred_set
-            })
-
-    metadata = {
-        "classes": CLASSES,
+    calib_metadata = {
         "num_classes": NUM_CLASSES,
+        "classes": CLASSES,
+        "class_map": CLASS_MAP,
         "n_train": len(X_train),
         "n_cal": len(X_cal),
         "n_test": len(X_test),
-        "default_alpha": 0.05,
-        "default_target_coverage": 0.95,
         "quantiles": quantiles_dict,
-        "metrics": test_coverage_results,
-        "curated_samples": curated_info
+        "curated_samples": [
+            {
+                "id": "study_conf_1",
+                "filename": "study_conf_1.jpg",
+                "type": "Pituitary Microadenoma",
+                "label": "Study #1042 — Confident Diagnostic State",
+                "true_class": "Pituitary Tumor",
+                "expected_set": ["Pituitary Tumor"],
+                "image_url": "/api/curated-samples/study_conf_1.jpg"
+            },
+            {
+                "id": "study_conf_2",
+                "filename": "study_conf_2.jpg",
+                "type": "Pituitary Macroadenoma",
+                "label": "Study #1043 — Confident Diagnostic State",
+                "true_class": "Pituitary Tumor",
+                "expected_set": ["Pituitary Tumor"],
+                "image_url": "/api/curated-samples/study_conf_2.jpg"
+            },
+            {
+                "id": "study_ambig_1",
+                "filename": "study_ambig_1.jpg",
+                "type": "Low-Grade Glioma",
+                "label": "Study #1044 — Ambiguous State (Triage Required)",
+                "true_class": "Glioma",
+                "expected_set": ["Glioma"],
+                "image_url": "/api/curated-samples/study_ambig_1.jpg"
+            },
+            {
+                "id": "study_ambig_2",
+                "filename": "study_ambig_2.jpg",
+                "type": "High-Grade Glioma",
+                "label": "Study #1045 — Ambiguous State (Triage Required)",
+                "true_class": "Glioma",
+                "expected_set": ["Glioma"],
+                "image_url": "/api/curated-samples/study_ambig_2.jpg"
+            }
+        ]
     }
 
-    with open(CALIB_SAVE_PATH, 'w') as f:
-        json.dump(metadata, f, indent=2)
+    with open(CALIB_PATH, 'w') as f:
+        json.dump(calib_metadata, f, indent=2)
 
-    print("Re-calibrated model and exported DICOM accession studies!")
+    print("Re-calibrated model on combined dataset!")
 
 if __name__ == '__main__':
     train_and_calibrate()

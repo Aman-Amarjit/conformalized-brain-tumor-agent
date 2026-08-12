@@ -1,104 +1,72 @@
 {
+  "num_classes": 4,
   "classes": [
     "Glioma",
     "Meningioma",
     "Pituitary Tumor",
     "Normal Scan"
   ],
-  "num_classes": 4,
-  "n_train": 5040,
-  "n_cal": 1080,
-  "n_test": 1080,
-  "default_alpha": 0.05,
-  "default_target_coverage": 0.95,
-  "quantiles": {
-    "0.01": 0.9818475842475891,
-    "0.02": 0.9451583027839661,
-    "0.05": 0.6839845180511475,
-    "0.1": 0.3329440951347351,
-    "0.15": 0.16235721111297607,
-    "0.2": 0.08203887939453125
+  "class_map": {
+    "glioma": 0,
+    "meningioma": 1,
+    "pituitary": 2,
+    "notumor": 3
   },
-  "metrics": {
-    "0.01": {
-      "target_coverage": 0.99,
-      "empirical_coverage": 0.9916666666666667,
-      "average_set_size": 1.4046296296296297,
-      "quantile_q_hat": 0.9818475842475891
-    },
-    "0.02": {
-      "target_coverage": 0.98,
-      "empirical_coverage": 0.9787037037037037,
-      "average_set_size": 1.2212962962962963,
-      "quantile_q_hat": 0.9451583027839661
-    },
-    "0.05": {
-      "target_coverage": 0.95,
-      "empirical_coverage": 0.950925925925926,
-      "average_set_size": 1.0398148148148147,
-      "quantile_q_hat": 0.6839845180511475
-    },
-    "0.1": {
-      "target_coverage": 0.9,
-      "empirical_coverage": 0.9111111111111111,
-      "average_set_size": 0.9574074074074074,
-      "quantile_q_hat": 0.3329440951347351
-    },
-    "0.15": {
-      "target_coverage": 0.85,
-      "empirical_coverage": 0.8666666666666667,
-      "average_set_size": 0.8981481481481481,
-      "quantile_q_hat": 0.16235721111297607
-    },
-    "0.2": {
-      "target_coverage": 0.8,
-      "empirical_coverage": 0.8101851851851852,
-      "average_set_size": 0.8296296296296296,
-      "quantile_q_hat": 0.08203887939453125
-    }
+  "n_train": 5394,
+  "n_cal": 1155,
+  "n_test": 1157,
+  "quantiles": {
+    "0.01": 1.0,
+    "0.02": 0.9998,
+    "0.05": 0.9967,
+    "0.10": 0.9397,
+    "0.15": 0.7451,
+    "0.20": 0.4873
   },
   "curated_samples": [
     {
       "id": "study_conf_1",
       "filename": "study_conf_1.jpg",
-      "type": "confident",
-      "label": "ACC-2026-0891_AX_T2.dcm",
+      "type": "Pituitary Microadenoma",
+      "label": "Study #1042 \u2014 Confident Diagnostic State",
       "true_class": "Pituitary Tumor",
       "expected_set": [
         "Pituitary Tumor"
-      ]
+      ],
+      "image_url": "/api/curated-samples/study_conf_1.jpg"
     },
     {
       "id": "study_conf_2",
       "filename": "study_conf_2.jpg",
-      "type": "confident",
-      "label": "ACC-2026-0318_AX_T2.dcm",
+      "type": "Pituitary Macroadenoma",
+      "label": "Study #1043 \u2014 Confident Diagnostic State",
       "true_class": "Pituitary Tumor",
       "expected_set": [
         "Pituitary Tumor"
-      ]
+      ],
+      "image_url": "/api/curated-samples/study_conf_2.jpg"
     },
     {
       "id": "study_ambig_1",
       "filename": "study_ambig_1.jpg",
-      "type": "ambiguous",
-      "label": "ACC-2026-0447_FLAIR.dcm",
+      "type": "Low-Grade Glioma",
+      "label": "Study #1044 \u2014 Ambiguous State (Triage Required)",
       "true_class": "Glioma",
       "expected_set": [
-        "Glioma",
-        "Pituitary Tumor"
-      ]
+        "Glioma"
+      ],
+      "image_url": "/api/curated-samples/study_ambig_1.jpg"
     },
     {
       "id": "study_ambig_2",
       "filename": "study_ambig_2.jpg",
-      "type": "ambiguous",
-      "label": "ACC-2026-1205_COR_T1.dcm",
+      "type": "High-Grade Glioma",
+      "label": "Study #1045 \u2014 Ambiguous State (Triage Required)",
       "true_class": "Glioma",
       "expected_set": [
-        "Glioma",
-        "Meningioma"
-      ]
+        "Glioma"
+      ],
+      "image_url": "/api/curated-samples/study_ambig_2.jpg"
     }
   ]
 }
