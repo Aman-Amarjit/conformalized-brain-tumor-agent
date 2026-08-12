@@ -24,6 +24,8 @@ interface ConditionDetail {
   badgeBg: string;
   badgeColor: string;
   badgeBorder: string;
+  cardBg: string;
+  cardBorder: string;
   summary: string;
   explanation: string;
   nextSteps: string[];
@@ -33,9 +35,11 @@ const CONDITION_INFO: Record<string, ConditionDetail> = {
   'Normal Scan': {
     title: 'Normal Scan — No Abnormalities Detected',
     badgeLabel: 'Normal / Clear Scan',
-    badgeBg: '#ecfdf5',
-    badgeColor: '#047857',
-    badgeBorder: '#a7f3d0',
+    badgeBg: '#059669',
+    badgeColor: '#ffffff',
+    badgeBorder: '#10b981',
+    cardBg: '#022c22',
+    cardBorder: '#065f46',
     summary: 'The MRI scan shows normal brain tissue structures with no indications of tumor growth.',
     explanation: 'Our automated diagnostic tool analyzed tissue density, symmetry, and structure in your scan. The visible brain tissue, ventricles, and surrounding structures fall within healthy normal parameters.',
     nextSteps: [
@@ -47,9 +51,11 @@ const CONDITION_INFO: Record<string, ConditionDetail> = {
   'Glioma': {
     title: 'Glioma Pattern Identified',
     badgeLabel: 'Abnormal Finding — Requires Specialist Review',
-    badgeBg: '#fff1f2',
-    badgeColor: '#be123c',
-    badgeBorder: '#fecdd3',
+    badgeBg: '#dc2626',
+    badgeColor: '#ffffff',
+    badgeBorder: '#ef4444',
+    cardBg: '#450a0a',
+    cardBorder: '#991b1b',
     summary: 'The analysis identified tissue features characteristic of a Glioma.',
     explanation: 'A Glioma is a type of tumor that arises from the glial supportive cells in brain tissue. Because gliomas vary in growth behavior, a comprehensive clinical evaluation by a specialist is necessary.',
     nextSteps: [
@@ -61,9 +67,11 @@ const CONDITION_INFO: Record<string, ConditionDetail> = {
   'Meningioma': {
     title: 'Meningioma Pattern Identified',
     badgeLabel: 'Abnormal Finding — Specialist Consultation Recommended',
-    badgeBg: '#fffbeb',
-    badgeColor: '#b45309',
-    badgeBorder: '#fde68a',
+    badgeBg: '#d97706',
+    badgeColor: '#ffffff',
+    badgeBorder: '#f59e0b',
+    cardBg: '#451a03',
+    cardBorder: '#92400e',
     summary: 'The analysis identified tissue features characteristic of a Meningioma.',
     explanation: 'A Meningioma is a tumor originating from the meninges (the outer protective membranes surrounding the brain). Most meningiomas are non-cancerous (benign) and grow slowly over time.',
     nextSteps: [
@@ -75,9 +83,11 @@ const CONDITION_INFO: Record<string, ConditionDetail> = {
   'Pituitary Tumor': {
     title: 'Pituitary Region Finding Identified',
     badgeLabel: 'Abnormal Finding — Specialist Consultation Recommended',
-    badgeBg: '#fffbeb',
-    badgeColor: '#b45309',
-    badgeBorder: '#fde68a',
+    badgeBg: '#d97706',
+    badgeColor: '#ffffff',
+    badgeBorder: '#f59e0b',
+    cardBg: '#451a03',
+    cardBorder: '#92400e',
     summary: 'The analysis identified tissue features in the pituitary gland region.',
     explanation: 'A pituitary tumor develops in the pituitary gland at the base of the brain. The vast majority are benign adenomas that may affect hormone regulation or nearby optic pathways.',
     nextSteps: [
@@ -222,13 +232,13 @@ export const App: React.FC = () => {
   const condition = CONDITION_INFO[topClassName] || CONDITION_INFO['Normal Scan'];
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f8fafc' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#000000', color: '#f4f4f5' }}>
       
-      {/* Hospital-Grade Header Navbar */}
+      {/* Pure Black Header Navbar */}
       <header className="no-print" style={{
         height: '60px',
-        backgroundColor: '#ffffff',
-        borderBottom: '1px solid #e2e8f0',
+        backgroundColor: '#09090b',
+        borderBottom: '1px solid #18181b',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -242,7 +252,7 @@ export const App: React.FC = () => {
             width: '32px',
             height: '32px',
             borderRadius: '6px',
-            backgroundColor: '#0284c7',
+            backgroundColor: '#2563eb',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -251,10 +261,10 @@ export const App: React.FC = () => {
             <Activity size={18} />
           </div>
           <div>
-            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.01em' }}>
+            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.01em' }}>
               Brain MRI Assessment Portal
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+            <div style={{ fontSize: '0.72rem', color: '#71717a' }}>
               Patient Diagnostic Decision Support System
             </div>
           </div>
@@ -266,11 +276,11 @@ export const App: React.FC = () => {
             alignItems: 'center',
             gap: '0.4rem',
             fontSize: '0.78rem',
-            color: '#047857',
-            backgroundColor: '#ecfdf5',
+            color: '#4ade80',
+            backgroundColor: '#052e16',
             padding: '4px 10px',
             borderRadius: '4px',
-            border: '1px solid #a7f3d0',
+            border: '1px solid #14532d',
             fontWeight: 600
           }}>
             <CheckCircle size={14} />
@@ -284,10 +294,10 @@ export const App: React.FC = () => {
         
         {/* Intro / Banner */}
         <div className="no-print" style={{ marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.35rem' }}>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.35rem' }}>
             Brain Scan Image Analysis
           </h1>
-          <p style={{ fontSize: '0.95rem', color: '#475569', maxWidth: '780px', lineHeight: '1.5' }}>
+          <p style={{ fontSize: '0.95rem', color: '#a1a1aa', maxWidth: '780px', lineHeight: '1.5' }}>
             Select an MRI scan sample or upload an image file to generate a clear, plain-language assessment of structural findings and recommended healthcare steps.
           </p>
         </div>
@@ -302,25 +312,24 @@ export const App: React.FC = () => {
           
           {/* Card 1: File Uploader */}
           <div style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e2e8f0',
+            backgroundColor: '#09090b',
+            border: '1px solid #18181b',
             borderRadius: '8px',
             padding: '1.25rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             display: 'flex',
             flexDirection: 'column'
           }}>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Upload size={16} color="#0284c7" />
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Upload size={16} color="#3b82f6" />
               <span>1. Upload Brain MRI Scan</span>
             </div>
 
             <div
               onClick={() => fileInputRef.current?.click()}
               style={{
-                border: '2px dashed #cbd5e1',
+                border: '2px dashed #27272a',
                 borderRadius: '6px',
-                backgroundColor: '#f8fafc',
+                backgroundColor: '#121215',
                 padding: '1.75rem 1rem',
                 textAlign: 'center',
                 cursor: 'pointer',
@@ -332,15 +341,15 @@ export const App: React.FC = () => {
                 gap: '0.5rem',
                 flex: 1
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#0284c7'; e.currentTarget.style.backgroundColor = '#f0f9ff'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.backgroundColor = '#f8fafc'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#3b82f6'; e.currentTarget.style.backgroundColor = '#172554'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#27272a'; e.currentTarget.style.backgroundColor = '#121215'; }}
             >
-              <Upload size={28} color="#64748b" />
+              <Upload size={28} color="#71717a" />
               <div>
-                <div style={{ fontSize: '0.86rem', fontWeight: 600, color: '#0f172a' }}>
+                <div style={{ fontSize: '0.86rem', fontWeight: 600, color: '#ffffff' }}>
                   Click to select scan image
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.75rem', color: '#71717a', marginTop: '2px' }}>
                   Supports DICOM, PNG, JPG files
                 </div>
               </div>
@@ -362,32 +371,31 @@ export const App: React.FC = () => {
                 marginTop: '0.85rem',
                 padding: '6px 10px',
                 borderRadius: '4px',
-                backgroundColor: '#f0f9ff',
-                border: '1px solid #bae6fd',
+                backgroundColor: '#172554',
+                border: '1px solid #1d4ed8',
                 fontSize: '0.78rem',
-                color: '#0369a1',
+                color: '#93c5fd',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between'
               }}>
                 <span>File selected: <strong>{uploadedFile.name}</strong></span>
-                <CheckCircle size={14} color="#0284c7" />
+                <CheckCircle size={14} color="#60a5fa" />
               </div>
             )}
           </div>
 
           {/* Card 2: Sample Scans */}
           <div style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e2e8f0',
+            backgroundColor: '#09090b',
+            border: '1px solid #18181b',
             borderRadius: '8px',
             padding: '1.25rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             display: 'flex',
             flexDirection: 'column'
           }}>
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <FileText size={16} color="#0284c7" />
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <FileText size={16} color="#3b82f6" />
               <span>2. Or Select a Test MRI Sample</span>
             </div>
 
@@ -401,8 +409,8 @@ export const App: React.FC = () => {
                     style={{
                       padding: '0.6rem',
                       borderRadius: '6px',
-                      backgroundColor: isSelected ? '#f0f9ff' : '#ffffff',
-                      border: `1px solid ${isSelected ? '#0284c7' : '#e2e8f0'}`,
+                      backgroundColor: isSelected ? '#172554' : '#121215',
+                      border: `1px solid ${isSelected ? '#3b82f6' : '#27272a'}`,
                       textAlign: 'left',
                       transition: 'all 0.15s ease',
                       display: 'flex',
@@ -416,7 +424,7 @@ export const App: React.FC = () => {
                       height: '36px',
                       borderRadius: '4px',
                       overflow: 'hidden',
-                      backgroundColor: '#0f172a',
+                      backgroundColor: '#000000',
                       flexShrink: 0
                     }}>
                       <img
@@ -426,10 +434,10 @@ export const App: React.FC = () => {
                       />
                     </div>
                     <div style={{ overflow: 'hidden' }}>
-                      <div style={{ fontSize: '0.8rem', fontWeight: 600, color: isSelected ? '#0369a1' : '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{ fontSize: '0.8rem', fontWeight: 600, color: isSelected ? '#93c5fd' : '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {sample.true_class}
                       </div>
-                      <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                      <div style={{ fontSize: '0.7rem', color: '#71717a' }}>
                         {sample.type}
                       </div>
                     </div>
@@ -450,9 +458,9 @@ export const App: React.FC = () => {
               gap: '0.4rem',
               padding: '8px 14px',
               borderRadius: '4px',
-              backgroundColor: '#fef2f2',
-              border: '1px solid #fecdd3',
-              color: '#991b1b',
+              backgroundColor: '#450a0a',
+              border: '1px solid #991b1b',
+              color: '#f87171',
               fontSize: '0.82rem',
               marginBottom: '1rem'
             }}>
@@ -468,11 +476,11 @@ export const App: React.FC = () => {
               style={{
                 padding: '0.85rem 2.25rem',
                 borderRadius: '6px',
-                backgroundColor: isLoading ? '#94a3b8' : '#0284c7',
+                backgroundColor: isLoading ? '#3f3f46' : '#2563eb',
                 color: '#ffffff',
                 fontWeight: 600,
                 fontSize: '0.95rem',
-                boxShadow: isLoading ? 'none' : '0 2px 4px rgba(2, 132, 199, 0.2)',
+                boxShadow: isLoading ? 'none' : '0 2px 8px rgba(37, 99, 235, 0.4)',
                 transition: 'all 0.15s ease-in-out',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -498,11 +506,10 @@ export const App: React.FC = () => {
         {/* Results / Findings Display */}
         {predictionResult && (
           <div ref={reportRef} style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e2e8f0',
+            backgroundColor: '#09090b',
+            border: '1px solid #18181b',
             borderRadius: '8px',
-            padding: '2rem',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+            padding: '2rem'
           }}>
             
             {/* Header bar */}
@@ -511,16 +518,16 @@ export const App: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'space-between',
               paddingBottom: '1.25rem',
-              borderBottom: '1px solid #e2e8f0',
+              borderBottom: '1px solid #18181b',
               marginBottom: '1.5rem',
               flexWrap: 'wrap',
               gap: '1rem'
             }}>
               <div>
-                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#0284c7', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Medical Assessment Summary
                 </div>
-                <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>
+                <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#ffffff', marginTop: '2px' }}>
                   MRI Diagnostic Findings & Patient Guide
                 </h2>
               </div>
@@ -531,9 +538,9 @@ export const App: React.FC = () => {
                 style={{
                   padding: '7px 14px',
                   borderRadius: '4px',
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #cbd5e1',
-                  color: '#334155',
+                  backgroundColor: '#121215',
+                  border: '1px solid #27272a',
+                  color: '#e4e4e7',
                   fontSize: '0.8rem',
                   fontWeight: 600,
                   display: 'flex',
@@ -549,8 +556,8 @@ export const App: React.FC = () => {
 
             {/* Assessment Banner Box */}
             <div style={{
-              backgroundColor: condition.badgeBg,
-              border: `1px solid ${condition.badgeBorder}`,
+              backgroundColor: condition.cardBg,
+              border: `1px solid ${condition.cardBorder}`,
               borderRadius: '6px',
               padding: '1.25rem 1.5rem',
               marginBottom: '1.75rem',
@@ -562,7 +569,7 @@ export const App: React.FC = () => {
                 width: '36px',
                 height: '36px',
                 borderRadius: '50%',
-                backgroundColor: condition.badgeColor,
+                backgroundColor: condition.badgeBg,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -577,22 +584,22 @@ export const App: React.FC = () => {
                   <span style={{
                     padding: '2px 8px',
                     borderRadius: '4px',
-                    backgroundColor: condition.badgeColor,
-                    color: '#ffffff',
+                    backgroundColor: condition.badgeBg,
+                    color: condition.badgeColor,
                     fontSize: '0.72rem',
                     fontWeight: 700
                   }}>
                     {condition.badgeLabel}
                   </span>
-                  <span style={{ fontSize: '0.82rem', color: '#475569' }}>
+                  <span style={{ fontSize: '0.82rem', color: '#a1a1aa' }}>
                     Model Agreement: <strong>{topClassProb}% Confidence</strong>
                   </span>
                 </div>
 
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
                   {condition.title}
                 </h3>
-                <p style={{ fontSize: '0.9rem', color: '#334155', lineHeight: '1.5' }}>
+                <p style={{ fontSize: '0.9rem', color: '#e4e4e7', lineHeight: '1.5' }}>
                   {condition.summary}
                 </p>
               </div>
@@ -608,12 +615,12 @@ export const App: React.FC = () => {
               
               {/* Image Preview Box */}
               <div style={{
-                backgroundColor: '#f8fafc',
-                border: '1px solid #e2e8f0',
+                backgroundColor: '#121215',
+                border: '1px solid #18181b',
                 borderRadius: '6px',
                 padding: '1rem'
               }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.75rem' }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.75rem' }}>
                   Analyzed MRI Scan Image
                 </div>
                 {selectedImagePreview && (
@@ -625,7 +632,8 @@ export const App: React.FC = () => {
                     overflow: 'hidden',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    border: '1px solid #27272a'
                   }}>
                     <img
                       src={selectedImagePreview}
@@ -638,12 +646,12 @@ export const App: React.FC = () => {
 
               {/* Likelihood Table */}
               <div style={{
-                backgroundColor: '#f8fafc',
-                border: '1px solid #e2e8f0',
+                backgroundColor: '#121215',
+                border: '1px solid #18181b',
                 borderRadius: '6px',
                 padding: '1rem'
               }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.75rem' }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.75rem' }}>
                   Diagnostic Category Probabilities
                 </div>
 
@@ -656,23 +664,23 @@ export const App: React.FC = () => {
                       return (
                         <div key={label}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '3px' }}>
-                            <span style={{ fontWeight: isTop ? 700 : 500, color: isTop ? '#0f172a' : '#475569' }}>
+                            <span style={{ fontWeight: isTop ? 700 : 500, color: isTop ? '#ffffff' : '#a1a1aa' }}>
                               {label}
                             </span>
-                            <span style={{ fontWeight: 700, color: isTop ? '#0284c7' : '#64748b' }}>
+                            <span style={{ fontWeight: 700, color: isTop ? '#60a5fa' : '#71717a' }}>
                               {percentage}%
                             </span>
                           </div>
                           <div style={{
                             height: '6px',
-                            backgroundColor: '#e2e8f0',
+                            backgroundColor: '#27272a',
                             borderRadius: '3px',
                             overflow: 'hidden'
                           }}>
                             <div style={{
                               height: '100%',
                               width: `${percentage}%`,
-                              backgroundColor: isTop ? '#0284c7' : '#94a3b8',
+                              backgroundColor: isTop ? '#2563eb' : '#52525b',
                               borderRadius: '3px'
                             }} />
                           </div>
@@ -693,35 +701,35 @@ export const App: React.FC = () => {
               
               {/* Detailed Explanation */}
               <div style={{
-                backgroundColor: '#ffffff',
-                border: '1px solid #e2e8f0',
+                backgroundColor: '#121215',
+                border: '1px solid #18181b',
                 borderRadius: '6px',
                 padding: '1.25rem'
               }}>
-                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.65rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <Info size={16} color="#0284c7" />
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.65rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Info size={16} color="#3b82f6" />
                   <span>Understanding Your Result</span>
                 </div>
-                <p style={{ fontSize: '0.85rem', color: '#334155', lineHeight: '1.6' }}>
+                <p style={{ fontSize: '0.85rem', color: '#a1a1aa', lineHeight: '1.6' }}>
                   {condition.explanation}
                 </p>
               </div>
 
               {/* Recommended Action Items */}
               <div style={{
-                backgroundColor: '#ffffff',
-                border: '1px solid #e2e8f0',
+                backgroundColor: '#121215',
+                border: '1px solid #18181b',
                 borderRadius: '6px',
                 padding: '1.25rem'
               }}>
-                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.65rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <Calendar size={16} color="#047857" />
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.65rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Calendar size={16} color="#4ade80" />
                   <span>Recommended Patient Next Steps</span>
                 </div>
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {condition.nextSteps.map((step, idx) => (
-                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', fontSize: '0.82rem', color: '#334155', lineHeight: '1.4' }}>
-                      <ArrowRight size={13} color="#047857" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', fontSize: '0.82rem', color: '#a1a1aa', lineHeight: '1.4' }}>
+                      <ArrowRight size={13} color="#4ade80" style={{ flexShrink: 0, marginTop: '2px' }} />
                       <span>{step}</span>
                     </li>
                   ))}
@@ -737,12 +745,12 @@ export const App: React.FC = () => {
 
       {/* Footer */}
       <footer className="no-print" style={{
-        borderTop: '1px solid #e2e8f0',
-        backgroundColor: '#ffffff',
+        borderTop: '1px solid #18181b',
+        backgroundColor: '#09090b',
         padding: '1.25rem',
         textAlign: 'center',
         fontSize: '0.78rem',
-        color: '#64748b'
+        color: '#71717a'
       }}>
         Brain MRI Assessment Portal • Diagnostic Decision Support System • For Clinical & Educational Evaluation
       </footer>
