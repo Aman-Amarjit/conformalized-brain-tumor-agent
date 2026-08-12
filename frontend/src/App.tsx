@@ -264,8 +264,8 @@ export const App: React.FC = () => {
             <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.01em', lineHeight: 1.2 }}>
               Brain MRI Assessment Portal
             </div>
-            <div className="header-subtitle" style={{ fontSize: '0.7rem', color: '#71717a', marginTop: '2px' }}>
-              Patient Diagnostic Decision Support System
+            <div className="header-subtitle" style={{ fontSize: '0.7rem', color: '#60a5fa', marginTop: '2px', fontWeight: 600 }}>
+              Made by Sonali Priyadarshini • Bhubaneswar Model Public School
             </div>
           </div>
         </div>
@@ -294,6 +294,9 @@ export const App: React.FC = () => {
         
         {/* Intro / Banner */}
         <div className="no-print" style={{ marginBottom: '1.75rem' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: '#93c5fd', backgroundColor: '#172554', border: '1px solid #1d4ed8', borderRadius: '4px', padding: '3px 10px', marginBottom: '0.6rem', fontWeight: 600 }}>
+            <span>🎓 Created by Sonali Priyadarshini — Bhubaneswar Model Public School</span>
+          </div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.35rem' }}>
             Brain Scan Image Analysis
           </h1>
@@ -525,7 +528,7 @@ export const App: React.FC = () => {
             }}>
               <div>
                 <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Medical Assessment Summary
+                  Medical Assessment Summary • Made by Sonali Priyadarshini (Bhubaneswar Model Public School)
                 </div>
                 <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#ffffff', marginTop: '2px' }}>
                   MRI Diagnostic Findings & Patient Guide
@@ -743,16 +746,15 @@ export const App: React.FC = () => {
 
       </main>
 
-      {/* Footer */}
       <footer className="no-print" style={{
         borderTop: '1px solid #18181b',
         backgroundColor: '#09090b',
-        padding: '1rem',
+        padding: '1.25rem 1rem',
         textAlign: 'center',
-        fontSize: '0.75rem',
-        color: '#71717a'
+        fontSize: '0.8rem',
+        color: '#a1a1aa'
       }}>
-        Brain MRI Assessment Portal • Diagnostic Decision Support System
+        Brain MRI Assessment Portal • Made by <strong>Sonali Priyadarshini</strong> (Bhubaneswar Model Public School)
       </footer>
     </div>
   );
