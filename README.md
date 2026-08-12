@@ -15,11 +15,11 @@ The **Conformalized Brain Tumor Diagnostic Agent** replaces point predictions wi
 
 ---
 
-## 🖥️ PACS Workstation Interface Preview
+## 🖥️ Brain MRI Diagnostic Portal Interface
 
-![PACS Medical Workstation Console](docs/pacs_workstation_demo.png)
+![Brain MRI Diagnostic Portal Preview](docs/pacs_workstation_demo.png)
 
-*Figure 1: OLED PACS Medical Workstation showing real-time split-conformal prediction set calibration ($\alpha=0.05$), non-conformity score quantile thresholding ($q_{\hat{\alpha}} = 0.9901$), score deltas ($\Delta S_i$), acute abstention triage banner, and RIS audit history.*
+*Figure 1: Pure Black OLED Dark Mode Medical Assessment Portal showing real-time MRI scan evaluation, clear diagnostic findings, plain-English summary, recommended next steps, and category probability distribution.*
 
 ## 🔬 How Conformal Prediction Works
 
