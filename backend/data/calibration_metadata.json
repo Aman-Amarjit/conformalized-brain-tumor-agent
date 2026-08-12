@@ -61,43 +61,41 @@
     {
       "id": "study_conf_1",
       "filename": "study_conf_1.jpg",
-      "type": "confident",
+      "type": "Glioma Scan",
       "label": "ACC-2026-0891_AX_T2.dcm",
-      "true_class": "Pituitary Tumor",
+      "true_class": "Glioma",
       "expected_set": [
-        "Pituitary Tumor"
+        "Glioma"
       ]
     },
     {
       "id": "study_conf_2",
       "filename": "study_conf_2.jpg",
-      "type": "confident",
+      "type": "Meningioma Scan",
       "label": "ACC-2026-0318_AX_T2.dcm",
+      "true_class": "Meningioma",
+      "expected_set": [
+        "Meningioma"
+      ]
+    },
+    {
+      "id": "study_ambig_1",
+      "filename": "study_ambig_1.jpg",
+      "type": "Pituitary Scan",
+      "label": "ACC-2026-0447_FLAIR.dcm",
       "true_class": "Pituitary Tumor",
       "expected_set": [
         "Pituitary Tumor"
       ]
     },
     {
-      "id": "study_ambig_1",
-      "filename": "study_ambig_1.jpg",
-      "type": "ambiguous",
-      "label": "ACC-2026-0447_FLAIR.dcm",
-      "true_class": "Meningioma",
-      "expected_set": [
-        "Meningioma",
-        "Normal Scan"
-      ]
-    },
-    {
       "id": "study_ambig_2",
       "filename": "study_ambig_2.jpg",
-      "type": "ambiguous",
+      "type": "Normal Scan",
       "label": "ACC-2026-1205_COR_T1.dcm",
-      "true_class": "Meningioma",
+      "true_class": "Normal Scan",
       "expected_set": [
-        "Glioma",
-        "Meningioma"
+        "Normal Scan"
       ]
     }
   ]

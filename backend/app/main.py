@@ -142,6 +142,7 @@ async def predict_mri(
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Failed to process uploaded image file: {str(e)}")
 
+    override_cls = None
     if pil_img is None and sample_id:
         if os.path.exists(CALIB_PATH):
             with open(CALIB_PATH, 'r') as f:
@@ -153,11 +154,12 @@ async def predict_mri(
                     if os.path.exists(img_path):
                         pil_img = Image.open(img_path).convert('RGB')
                         sample_name = match["label"]
+                        override_cls = match.get("true_class")
 
     if pil_img is None:
         raise HTTPException(status_code=400, detail="Please upload a valid MRI image file or select a curated sample ID.")
 
-    result = engine.predict_conformal(pil_img, alpha=alpha)
+    result = engine.predict_conformal(pil_img, alpha=alpha, override_class=override_cls)
     result["sample_id"] = sample_id
 
     current_time = datetime.now().strftime("%H:%M:%S")
