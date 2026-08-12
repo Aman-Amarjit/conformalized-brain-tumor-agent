@@ -34,7 +34,7 @@ def test_on_real_dataset():
         if not os.path.exists(folder_path):
             continue
         
-        files = sorted([f for f in os.listdir(folder_path) if f.lower().endswith(('.jpg', '.jpeg', '.png'))])[:30] # 30 per class
+        files = sorted([f for f in os.listdir(folder_path) if f.lower().endswith(('.jpg', '.jpeg', '.png'))])[:50] # 50 per class
         
         for fname in files:
             fpath = os.path.join(folder_path, fname)
